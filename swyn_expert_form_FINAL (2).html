@@ -876,7 +876,6 @@ function selectRating(fieldId, groupId, val) {
 
   </div>
 </div>
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ── Step & validation ──
@@ -1237,19 +1236,28 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    var zapForm = document.createElement('form');
-    zapForm.method='POST'; zapForm.action='https://hooks.zapier.com/hooks/catch/27018477/unr4dv1/';
-    zapForm.target='hidden_iframe'; zapForm.style.display='none';
-    Object.keys(data).forEach(function(k){ var inp=document.createElement('input');inp.type='hidden';inp.name=k;inp.value=data[k]||'';zapForm.appendChild(inp); });
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz_kzR8OOOWCQUuTrxS2GgEZxBfQiihvhlc_0O9tBiFfWJ-5fIUetuHTyhCSBDPfbr/exec';
 
-    document.body.appendChild(zapForm);
-    zapForm.submit();
-
-    setTimeout(function() {
-      document.body.removeChild(zapForm);
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(function() {
+      btn.textContent = 'Submit Application →';
+      btn.disabled = false;
+      btn.classList.remove('loading');
       current = 'success';
       showStep('success');
-    }, 1800);
+    })
+    .catch(function(err) {
+      console.error('Submission error:', err);
+      btn.textContent = 'Submit Application →';
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      alert('Something went wrong. Please try again.');
+    });
   });
 
 }); // end DOMContentLoaded
