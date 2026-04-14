@@ -1264,14 +1264,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
 }); // end DOMContentLoaded
 
-// ── Google Drive Upload via resumable upload + Drive API ──────────────────
-// Replace these with your actual values from Google Cloud Console
-var GDRIVE_CLIENT_ID   = '135903158453-a5uh1um865qs3he2jvac56n4gjbf99mm.apps.googleusercontent.com';   // OAuth 2.0 Client ID
-var GDRIVE_FOLDER_ID   = '1Qf-7mIeXN13tPWbcR_OHbvxwAWc-lhlg'; // Target folder in Drive
-
-var _driveTokenClient = null;
-var _driveAccessToken = null;
-var _pendingUploadType = null;
 
 // Map upload type → config
 var _uploadConfig = {
@@ -1280,9 +1272,7 @@ var _uploadConfig = {
   worksamples: { hiddenId: 'workSamplesDriveUrl',  labelId: 'workSamplesLabel', boxId: 'workSamplesUploadBox', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx', prompt: 'Select your work sample file' }
 };
 
-var _gsiLoaded = false;
-var _gsiLoading = false;
-var _gsiQueue = [];
+
 
 function _onGsiLoaded() {
   _gsiLoaded = true;
@@ -1302,114 +1292,48 @@ function _onGsiLoaded() {
 }
 
 function driveUpload(type) {
-  _pendingUploadType = type;
-  if (!_gsiLoaded) {
-    _gsiQueue.push(type);
-    if (!_gsiLoading) {
-      _gsiLoading = true;
-      var script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = _onGsiLoaded;
-      script.onerror = function() {
-        _gsiLoading = false;
-        alert('Could not load Google Sign-In. Please check your internet connection.');
-      };
-      document.head.appendChild(script);
-    }
-    return;
-  }
-  if (_driveAccessToken) {
-    _openFilePicker(type);
-  } else {
-    _driveTokenClient.requestAccessToken({ prompt: '' });
-  }
-}
-
-function _openFilePicker(type) {
-  var cfg = _uploadConfig[type];
-  var fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = cfg.accept;
-  fileInput.style.display = 'none';
-  document.body.appendChild(fileInput);
-  fileInput.addEventListener('change', function() {
-    if (fileInput.files && fileInput.files[0]) {
-      _uploadFileToDrive(fileInput.files[0], type);
-    }
-    document.body.removeChild(fileInput);
-  });
-  fileInput.click();
-}
-
-function _uploadFileToDrive(file, type) {
-  var cfg = _uploadConfig[type];
-  var box = document.getElementById(cfg.boxId);
-  var lbl = document.getElementById(cfg.labelId);
-  if (lbl) lbl.textContent = '⏳ Uploading…';
-  if (box) { box.style.borderStyle = 'solid'; box.style.borderColor = 'var(--orange)'; }
-
-  // Step 1: initiate resumable upload session
-  var metadata = {
-    name: file.name,
-    mimeType: file.type || 'application/octet-stream',
-    parents: GDRIVE_FOLDER_ID ? [GDRIVE_FOLDER_ID] : []
+  var config = {
+    cv: { hiddenId: 'cvDriveUrl', labelId: 'cvLabel', accept: '.pdf,.doc,.docx' },
+    photo: { hiddenId: 'photoDriveUrl', labelId: 'photoLabel', accept: '.jpg,.jpeg,.png' },
+    worksamples: { hiddenId: 'workSamplesDriveUrl', labelId: 'workSamplesLabel', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx' }
   };
 
-  fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + _driveAccessToken,
-      'Content-Type': 'application/json; charset=UTF-8',
-      'X-Upload-Content-Type': file.type || 'application/octet-stream',
-      'X-Upload-Content-Length': file.size
-    },
-    body: JSON.stringify(metadata)
-  })
-  .then(function(res) {
-    if (!res.ok) throw new Error('Failed to initiate upload session');
-    var uploadUrl = res.headers.get('Location');
-    // Step 2: upload file bytes
-    return fetch(uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      body: file
+  var cfg = config[type];
+
+  var input = document.createElement('input');
+  input.type = 'file';
+  input.accept = cfg.accept;
+  input.style.display = 'none';
+
+  document.body.appendChild(input);
+
+  input.onchange = function () {
+    var file = input.files[0];
+    if (!file) return;
+
+    var label = document.getElementById(cfg.labelId);
+    label.textContent = '⏳ Uploading...';
+
+    var formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    fetch("https://script.google.com/macros/s/AKfycbzz_kzR8OOOWCQUuTrxS2GgEZxBfQiihvhlc_0O9tBiFfWJ-5fIUetuHTyhCSBDPfbr/exec", {
+      method: "POST",
+      body: formData
+    })
+    .then(res => res.text())
+    .then(url => {
+      document.getElementById(cfg.hiddenId).value = url;
+      label.textContent = '✓ ' + file.name;
+    })
+    .catch(err => {
+      console.error(err);
+      label.textContent = '❌ Upload failed';
     });
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(fileData) {
-    // Step 3: make file shareable (anyone with link can view)
-    return fetch('https://www.googleapis.com/drive/v3/files/' + fileData.id + '/permissions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + _driveAccessToken,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ role: 'reader', type: 'anyone' })
-    }).then(function() { return fileData; });
-  })
-  .then(function(fileData) {
-    var shareUrl = 'https://drive.google.com/file/d/' + fileData.id + '/view?usp=sharing';
-    document.getElementById(cfg.hiddenId).value = shareUrl;
-    if (lbl) lbl.textContent = '✓ ' + file.name;
-    if (box) {
-      box.classList.add('upload-done');
-      box.style.borderColor = 'var(--orange)';
-      box.style.borderStyle = 'solid';
-      box.style.background = '#fff8f4';
-    }
-    // Clear any error on this field
-    var field = box ? box.closest('.field') : null;
-    if (field) { var e = field.querySelector('.err-msg'); if(e) e.remove(); }
-  })
-  .catch(function(err) {
-    console.error('Drive upload error:', err);
-    if (lbl) lbl.textContent = '❌ Upload failed — try again';
-    if (box) { box.style.borderColor = '#c0392b'; box.style.background = '#fff5f5'; }
-    // Token may have expired — clear it so next click re-authenticates
-    _driveAccessToken = null;
-  });
+  };
+
+  input.click();
 }
 
 </script>

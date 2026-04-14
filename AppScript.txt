@@ -1,0 +1,41 @@
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+
+  try {
+    // JSON form submission
+    if (e.postData && e.postData.type === "application/json") {
+      var data = JSON.parse(e.postData.contents);
+
+      if (sheet.getLastRow() === 0) {
+        sheet.appendRow(Object.keys(data));
+      }
+
+      sheet.appendRow(Object.values(data));
+
+      return ContentService
+        .createTextOutput("SUCCESS")
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+
+    // FILE upload
+    if (e.files && e.files.file) {
+      var fileBlob = e.files.file;
+
+      var folder = DriveApp.getFolderById("1Qf-7mIeXN13tPWbcR_OHbvxwAWc-lhlg");
+      var file = folder.createFile(fileBlob);
+
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+      return ContentService
+        .createTextOutput(file.getUrl())
+        .setMimeType(ContentService.MimeType.TEXT);
+    }
+
+    return ContentService.createTextOutput("INVALID REQUEST");
+
+  } catch (err) {
+    return ContentService
+      .createTextOutput("ERROR: " + err.message)
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+}
