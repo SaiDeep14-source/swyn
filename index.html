@@ -1238,7 +1238,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz_kzR8OOOWCQUuTrxS2GgEZxBfQiihvhlc_0O9tBiFfWJ-5fIUetuHTyhCSBDPfbr/exec';
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyVGhzqIdx9ff30aqqmttIZqHAGPm1a5BlHdOGqJ2QvAB1Q8mSbRhFYcMo99mw5hmY4/exec';
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -1274,22 +1274,7 @@ var _uploadConfig = {
 
 
 
-function _onGsiLoaded() {
-  _gsiLoaded = true;
-  _driveTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: GDRIVE_CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/drive.file',
-    callback: function(tokenResponse) {
-      if (tokenResponse && tokenResponse.access_token) {
-        _driveAccessToken = tokenResponse.access_token;
-        _openFilePicker(_pendingUploadType);
-      }
-    }
-  });
-  // Flush queued calls
-  _gsiQueue.forEach(function(t) { driveUpload(t); });
-  _gsiQueue = [];
-}
+
 
 function driveUpload(type) {
   var config = {
