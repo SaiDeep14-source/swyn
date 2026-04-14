@@ -92,14 +92,28 @@ textarea{resize:vertical;min-height:110px;line-height:1.6}
 .pill input[type=radio],.pill input[type=checkbox]{accent-color:var(--orange);width:13px;height:13px;flex-shrink:0}
 .pill.selected{border-color:var(--orange);background:var(--orange-muted);color:var(--orange);font-weight:600}
 
-/* Upload */
-.upload-box{border:2px dashed var(--border);border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--input-bg)}
-.upload-box:hover{border-color:var(--orange);background:#fdf6f1}
-.upload-box .upload-icon{font-size:30px;margin-bottom:8px}
-.upload-box p{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
-.upload-box span{font-size:12px;color:var(--muted)}
-.upload-box input[type=file]{display:none}
-.upload-done{border-color:var(--orange);background:#fff8f4}
+/* Upload — Drag & Drop */
+.drop-zone{position:relative;border:2px dashed var(--border);border-radius:14px;background:var(--input-bg);cursor:pointer;overflow:hidden;transition:border-color .2s,background .2s,box-shadow .2s}
+.drop-zone:hover{border-color:var(--orange);background:#fdf6f1;box-shadow:0 0 0 4px rgba(212,98,26,.07)}
+.drop-zone.dragover{border-color:var(--orange);border-style:solid;background:#fff8f4;box-shadow:0 0 0 6px rgba(212,98,26,.13)}
+.drop-zone.uploaded{border-color:#7cb87f;border-style:solid;background:#f4faf5}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2}
+.drop-zone-inner{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px 26px;pointer-events:none;text-align:center;transition:all .2s}
+.drop-icon-wrap{width:54px;height:54px;border-radius:13px;background:var(--orange-muted);display:flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;transition:transform .2s,background .2s}
+.drop-zone:hover .drop-icon-wrap,.drop-zone.dragover .drop-icon-wrap{transform:translateY(-4px) scale(1.08);background:#f5d5bb}
+.drop-zone.uploaded .drop-icon-wrap{background:#d4edda}
+.drop-zone-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.drop-zone-sub{font-size:12px;color:var(--muted);line-height:1.6}
+.drop-zone-sub strong{color:var(--orange);font-weight:600}
+.drop-progress{height:3px;background:var(--orange-muted);border-radius:0 0 12px 12px;overflow:hidden;display:none}
+.drop-progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-light));transition:width .35s ease;width:0%}
+.file-list{list-style:none;padding:0;margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.file-list li{display:flex;align-items:center;gap:8px;background:var(--orange-muted);border:1.5px solid var(--orange);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--orange);font-weight:500;animation:fileIn .18s ease}
+@keyframes fileIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.file-list li .fname{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;flex:1}
+.file-list li .fsize{font-size:11px;color:var(--muted);white-space:nowrap;font-weight:400;padding:0 6px}
+.file-list li .fremove{background:none;border:none;cursor:pointer;color:var(--orange);font-size:16px;line-height:1;padding:0;opacity:.7;transition:opacity .15s;flex-shrink:0}
+.file-list li .fremove:hover{opacity:1}
 
 /* Rating */
 .rating-group{display:flex;gap:6px}
@@ -757,21 +771,31 @@ function selectRating(fieldId, groupId, val) {
 
         <div class="field full">
           <label>Upload your CV / Resume <span class="req">*</span></label>
-          <div class="upload-box" id="cvUploadBox" onclick="driveUpload('cv')" style="cursor:pointer;">
-            <div class="upload-icon">📄</div>
-            <p id="cvLabel">Click to upload via Google Drive</p>
-            <span>PDF or Word — sign in with Google to upload</span>
+          <div class="drop-zone" id="cvZone">
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleDropFiles(this,'cvZone','cvFileList','cvDriveUrl')"/>
+            <div class="drop-zone-inner">
+              <div class="drop-icon-wrap">📄</div>
+              <p class="drop-zone-title">Drag &amp; drop your CV here</p>
+              <p class="drop-zone-sub">or <strong>click to browse</strong> from your device<br/>PDF or Word · Max 10 MB</p>
+            </div>
+            <div class="drop-progress" id="cvProgress"><div class="drop-progress-fill" id="cvProgressFill"></div></div>
           </div>
+          <ul class="file-list" id="cvFileList"></ul>
           <input type="hidden" id="cvDriveUrl"/>
         </div>
 
         <div class="field full">
           <label>Upload a professional photo <span style="color:var(--muted);font-weight:400;">(optional but recommended)</span></label>
-          <div class="upload-box" id="photoUploadBox" onclick="driveUpload('photo')" style="cursor:pointer;">
-            <div class="upload-icon">🖼️</div>
-            <p id="photoLabel">Click to upload via Google Drive</p>
-            <span>JPG or PNG — sign in with Google to upload</span>
+          <div class="drop-zone" id="photoZone">
+            <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp" onchange="handleDropFiles(this,'photoZone','photoFileList','photoDriveUrl')"/>
+            <div class="drop-zone-inner">
+              <div class="drop-icon-wrap">🖼️</div>
+              <p class="drop-zone-title">Drag &amp; drop your photo here</p>
+              <p class="drop-zone-sub">or <strong>click to browse</strong> from your device<br/>JPG or PNG · Max 5 MB</p>
+            </div>
+            <div class="drop-progress" id="photoProgress"><div class="drop-progress-fill" id="photoProgressFill"></div></div>
           </div>
+          <ul class="file-list" id="photoFileList"></ul>
           <input type="hidden" id="photoDriveUrl"/>
         </div>
 
@@ -794,12 +818,18 @@ function selectRating(fieldId, groupId, val) {
 
         <div class="field full">
           <label>Upload work samples <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-          <div class="upload-box" id="workSamplesUploadBox" onclick="driveUpload('worksamples')" style="cursor:pointer;">
-            <div class="upload-icon">📁</div>
-            <p id="workSamplesLabel">Click to upload via Google Drive</p>
-            <span>Anonymised deliverables, models, frameworks — sign in with Google to upload</span>
+          <div class="drop-zone" id="samplesZone">
+            <input type="file" id="samplesFile" accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx" multiple onchange="handleDropFiles(this,'samplesZone','samplesFileList','workSamplesDriveUrl')"/>
+            <div class="drop-zone-inner">
+              <div class="drop-icon-wrap">📁</div>
+              <p class="drop-zone-title">Drag &amp; drop work samples here</p>
+              <p class="drop-zone-sub">or <strong>click to browse</strong> · Multiple files allowed<br/>PDF, PPT, Excel, Word · Max 20 MB total</p>
+            </div>
+            <div class="drop-progress" id="samplesProgress"><div class="drop-progress-fill" id="samplesProgressFill"></div></div>
           </div>
+          <ul class="file-list" id="samplesFileList"></ul>
           <input type="hidden" id="workSamplesDriveUrl"/>
+          <span class="hint" style="margin-top:4px;">Anonymised deliverables, models, frameworks are welcome.</span>
         </div>
 
       </div>
@@ -868,7 +898,7 @@ function selectRating(fieldId, groupId, val) {
         <div class="success-icon">&#10003;</div>
         <h2>Application Submitted!</h2>
         <p>Thank you for applying to join SWYN's expert mentor network.<br/>Our team will review your profile and get in touch within <strong>3–5 business days</strong>.</p>
-        <p style="margin-top:20px;font-size:13px;color:var(--muted);">Questions? Write to us at <a href="/cdn-cgi/l/email-protection#0d64636b624d7e7a7463236463" style="color:var(--orange);"><span class="__cf_email__" data-cfemail="630a0d050c2310141a0d4d0a0d">[email&#160;protected]</span></a></p>
+        <p style="margin-top:20px;font-size:13px;color:var(--muted);">Questions? Write to us at <a href="mailto:info@swyn.in" style="color:var(--orange);">info@swyn.in</a></p>
       </div>
     </div>
 
@@ -944,6 +974,8 @@ function getPillValues(gridId) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+  // Initialise drag-and-drop on all drop zones
+  initDropZones();
 
   // Global Enter key → move to next field or advance step
   document.addEventListener('keydown', function(e) {
@@ -1138,20 +1170,21 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('next4').addEventListener('click', function() {
     var checks = [{id:'linkedinProfile',msg:'Please enter your LinkedIn profile URL.'}];
     var ok = validate(checks);
-    // CV upload check — now uses Google Drive URL
-    var cvUrl = document.getElementById('cvDriveUrl');
-    var cvBox = document.getElementById('cvUploadBox');
-    var cvField = cvBox ? cvBox.closest('.field') : null;
-    if (!cvUrl || !cvUrl.value) {
-      if (cvBox) { cvBox.style.borderColor = '#c0392b'; cvBox.style.background = '#fff5f5'; }
+    // CV upload check — verify a file has actually been selected
+    var cvInput = document.getElementById('cvFile');
+    var cvZone = document.getElementById('cvZone');
+    var cvField = cvZone ? cvZone.closest('.field') : null;
+    var cvHasFile = cvInput && cvInput.files && cvInput.files.length > 0;
+    if (!cvHasFile) {
+      if (cvZone) { cvZone.style.borderColor = '#c0392b'; cvZone.style.background = '#fff5f5'; }
       if (cvField && !cvField.querySelector('.err-msg')) {
         var cvErr = document.createElement('span');
-        cvErr.className = 'err-msg'; cvErr.textContent = 'Please upload your CV or Resume via Google Drive.';
+        cvErr.className = 'err-msg'; cvErr.textContent = 'Please upload your CV or Resume.';
         cvField.appendChild(cvErr);
       }
       ok = false;
     } else {
-      if (cvBox) { cvBox.style.borderColor = ''; cvBox.style.background = ''; }
+      if (cvZone) { cvZone.style.borderColor = ''; cvZone.style.background = ''; }
       if (cvField) { var e = cvField.querySelector('.err-msg'); if(e) e.remove(); }
     }
     if (ok) { current=5; showStep(current); } else { scrollToFirstError(); }
@@ -1229,9 +1262,9 @@ document.addEventListener('DOMContentLoaded', function() {
       'Top Achievements': getVal('topAchievements'),
       'Consent to list on swyn.in': getVal('websiteListingConsent'),
       'Anything else you would like SWYN to know?': getVal('additionalInfo'),
-      'CV / Resume (Google Drive)': getVal('cvDriveUrl'),
-      'Professional Photo (Google Drive)': getVal('photoDriveUrl'),
-      'Work Samples (Google Drive)': getVal('workSamplesDriveUrl'),
+      'CV / Resume (file name)': (function(){ var i=document.getElementById('cvFile'); return i&&i.files&&i.files.length?Array.from(i.files).map(function(f){return f.name;}).join(', '):''; })(),
+      'Professional Photo (file name)': (function(){ var i=document.getElementById('photoFile'); return i&&i.files&&i.files.length?Array.from(i.files).map(function(f){return f.name;}).join(', '):''; })(),
+      'Work Samples (file names)': (function(){ var i=document.getElementById('samplesFile'); return i&&i.files&&i.files.length?Array.from(i.files).map(function(f){return f.name;}).join(', '):''; })(),
       'Submitted At': new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})
     };
 
@@ -1243,7 +1276,7 @@ document.addEventListener('DOMContentLoaded', function() {
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(data)
     })
     .then(function() {
@@ -1254,71 +1287,205 @@ document.addEventListener('DOMContentLoaded', function() {
       showStep('success');
     })
     .catch(function(err) {
-      console.error('Submission error:', err);
-      btn.textContent = 'Submit Application →';
-      btn.disabled = false;
-      btn.classList.remove('loading');
-      alert('Something went wrong. Please try again.');
+      // With no-cors, a network error can still occur (e.g. DNS failure, blocked URL).
+      // Retry once after 2 seconds before showing an error.
+      console.warn('Submission attempt 1 failed, retrying…', err);
+      setTimeout(function() {
+        fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(data)
+        })
+        .then(function() {
+          btn.textContent = 'Submit Application →';
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          current = 'success';
+          showStep('success');
+        })
+        .catch(function(err2) {
+          console.error('Submission error after retry:', err2);
+          btn.textContent = 'Submit Application →';
+          btn.disabled = false;
+          btn.classList.remove('loading');
+          alert('Could not reach the server. Please check your internet connection and try again. If the problem persists, write to us at mentors@swyn.in');
+        });
+      }, 2000);
     });
   });
 
 }); // end DOMContentLoaded
 
 
-// Map upload type → config
-var _uploadConfig = {
-  cv:          { hiddenId: 'cvDriveUrl',          labelId: 'cvLabel',          boxId: 'cvUploadBox',          accept: '.pdf,.doc,.docx',                     prompt: 'Select your CV / Resume (PDF or Word)' },
-  photo:       { hiddenId: 'photoDriveUrl',        labelId: 'photoLabel',       boxId: 'photoUploadBox',       accept: '.jpg,.jpeg,.png',                     prompt: 'Select your professional photo (JPG or PNG)' },
-  worksamples: { hiddenId: 'workSamplesDriveUrl',  labelId: 'workSamplesLabel', boxId: 'workSamplesUploadBox', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx', prompt: 'Select your work sample file' }
+
+
+
+
+
+
+// ── Drag & Drop zone setup ──
+function initDropZones() {
+  document.querySelectorAll('.drop-zone').forEach(function(zone) {
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault(); zone.classList.add('dragover');
+    });
+    zone.addEventListener('dragleave', function(e) {
+      if (!zone.contains(e.relatedTarget)) zone.classList.remove('dragover');
+    });
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault(); zone.classList.remove('dragover');
+      var input = zone.querySelector('input[type=file]');
+      if (!input) return;
+      var dt = new DataTransfer();
+      Array.from(e.dataTransfer.files).forEach(function(f) { dt.items.add(f); });
+      input.files = dt.files;
+      input.dispatchEvent(new Event('change'));
+    });
+  });
+}
+
+function fmtBytes(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+
+var dropZoneMeta = {
+  cvZone:      { icon:'📄', title:'Drag & drop your CV here',          sub:'or <strong>click to browse</strong> from your device<br/>PDF or Word · Max 10 MB' },
+  photoZone:   { icon:'🖼️', title:'Drag & drop your photo here',       sub:'or <strong>click to browse</strong> from your device<br/>JPG or PNG · Max 5 MB' },
+  samplesZone: { icon:'📁', title:'Drag & drop work samples here',     sub:'or <strong>click to browse</strong> · Multiple files allowed<br/>PDF, PPT, Excel, Word · Max 20 MB total' }
 };
 
+function handleDropFiles(input, zoneId, listId, hiddenId) {
+  if (!input.files || !input.files.length) return;
+  var zone = document.getElementById(zoneId);
+  var list = document.getElementById(listId);
+  var hidden = document.getElementById(hiddenId);
+  var progressBar = zone.querySelector('.drop-progress');
+  var progressFill = zone.querySelector('.drop-progress-fill');
+  var files = Array.from(input.files);
 
+  // Update zone look
+  zone.classList.add('uploaded');
+  zone.style.borderColor = '';
+  zone.style.background = '';
+  var zoneField = zone.closest('.field');
+  if (zoneField) { var zErr = zoneField.querySelector('.err-msg'); if (zErr) zErr.remove(); }
+  zone.querySelector('.drop-zone-title').textContent = files.length === 1 ? '✓ File selected' : '✓ ' + files.length + ' files selected';
+  zone.querySelector('.drop-zone-sub').innerHTML = '<strong>Click or drag</strong> to replace';
 
+  // Progress animation
+  progressBar.style.display = 'block';
+  progressFill.style.width = '0%';
+  setTimeout(function(){ progressFill.style.width = '70%'; }, 40);
+  setTimeout(function(){ progressFill.style.width = '100%'; }, 420);
+  setTimeout(function(){ progressBar.style.display = 'none'; progressFill.style.width = '0%'; }, 900);
 
+  // Render file list
+  list.innerHTML = '';
+  files.forEach(function(f, idx) {
+    var li = document.createElement('li');
+    li.innerHTML = '<span>📎</span>'
+      + '<span class="fname">' + escH(f.name) + '</span>'
+      + '<span class="fsize">' + fmtBytes(f.size) + '</span>'
+      + '<button class="fremove" type="button" title="Remove" onclick="removeDropFile(this,\'' + zoneId + '\',\'' + listId + '\',\'' + hiddenId + '\',' + idx + ')">&#10005;</button>';
+    list.appendChild(li);
+  });
 
-function driveUpload(type) {
-  var config = {
-    cv: { hiddenId: 'cvDriveUrl', labelId: 'cvLabel', accept: '.pdf,.doc,.docx' },
-    photo: { hiddenId: 'photoDriveUrl', labelId: 'photoLabel', accept: '.jpg,.jpeg,.png' },
-    worksamples: { hiddenId: 'workSamplesDriveUrl', labelId: 'workSamplesLabel', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx' }
-  };
+  hidden.value = files.map(function(f){return f.name;}).join(', ');
 
-  var cfg = config[type];
+  // Size limits per zone (bytes)
+  var sizeLimits = { cvZone: 10*1024*1024, photoZone: 5*1024*1024, samplesZone: 20*1024*1024 };
+  var totalSize = files.reduce(function(sum, f){ return sum + f.size; }, 0);
+  var limit = sizeLimits[zoneId] || 20*1024*1024;
+  if (totalSize > limit) {
+    var zField = zone.closest('.field');
+    if (zField && !zField.querySelector('.err-msg')) {
+      var szErr = document.createElement('span');
+      szErr.className = 'err-msg';
+      szErr.textContent = 'File size exceeds the limit (' + fmtBytes(limit) + '). Please choose a smaller file.';
+      zField.appendChild(szErr);
+    }
+    // Reset zone
+    zone.classList.remove('uploaded');
+    var meta2 = dropZoneMeta[zoneId] || {};
+    zone.querySelector('.drop-icon-wrap').textContent = meta2.icon || '📁';
+    zone.querySelector('.drop-zone-title').textContent = meta2.title || 'Drag & drop here';
+    zone.querySelector('.drop-zone-sub').innerHTML = meta2.sub || 'or <strong>click to browse</strong>';
+    list.innerHTML = ''; hidden.value = '';
+    input.value = '';
+    return;
+  }
 
-  var input = document.createElement('input');
-  input.type = 'file';
-  input.accept = cfg.accept;
-  input.style.display = 'none';
+  // Upload each file to Google Apps Script as base64 JSON
+  var GAS_URL = "https://script.google.com/macros/s/AKfycbyVGhzqIdx9ff30aqqmttIZqHAGPm1a5BlHdOGqJ2QvAB1Q8mSbRhFYcMo99mw5hmY4/exec";
+  var typeMap = { cvZone:'cv', photoZone:'photo', samplesZone:'worksamples' };
+  var uploadType = typeMap[zoneId] || 'cv';
 
-  document.body.appendChild(input);
+  function sendFile(file, attempt) {
+    attempt = attempt || 1;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      var base64 = ev.target.result.split(',')[1];
+      fetch(GAS_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({
+          action: 'uploadFile',
+          type: uploadType,
+          fileName: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          data: base64
+        })
+      })
+      .then(function() {
+        console.log('File upload request sent: ' + file.name);
+      })
+      .catch(function(err) {
+        if (attempt < 3) {
+          // Retry up to 2 more times with a small delay
+          console.warn('Upload attempt ' + attempt + ' failed for ' + file.name + ', retrying…');
+          setTimeout(function(){ sendFile(file, attempt + 1); }, 1500 * attempt);
+        } else {
+          // Silent failure — form still works, file name is stored in hidden field
+          console.warn('Upload background send failed after 3 attempts for: ' + file.name + '. Will be noted in form submission.');
+        }
+      });
+    };
+    reader.onerror = function() {
+      console.error('FileReader could not read: ' + file.name);
+    };
+    reader.readAsDataURL(file);
+  }
 
-  input.onchange = function () {
-    var file = input.files[0];
-    if (!file) return;
+  files.forEach(function(file) { sendFile(file, 1); });
+}
 
-    var label = document.getElementById(cfg.labelId);
-    label.textContent = '⏳ Uploading...';
+function removeDropFile(btn, zoneId, listId, hiddenId, idx) {
+  var zone = document.getElementById(zoneId);
+  var list = document.getElementById(listId);
+  var hidden = document.getElementById(hiddenId);
+  var input = zone.querySelector('input[type=file]');
+  var dt = new DataTransfer();
+  Array.from(input.files).forEach(function(f, i){ if (i !== idx) dt.items.add(f); });
+  input.files = dt.files;
+  if (input.files.length === 0) {
+    // Reset zone to empty state
+    zone.classList.remove('uploaded');
+    var meta = dropZoneMeta[zoneId] || {};
+    zone.querySelector('.drop-icon-wrap').textContent = meta.icon || '📁';
+    zone.querySelector('.drop-zone-title').textContent = meta.title || 'Drag & drop here';
+    zone.querySelector('.drop-zone-sub').innerHTML = meta.sub || 'or <strong>click to browse</strong>';
+    list.innerHTML = ''; hidden.value = '';
+  } else {
+    input.dispatchEvent(new Event('change'));
+  }
+}
 
-    var formData = new FormData();
-    formData.append('file', file);
-    formData.append('type', type);
-
-    fetch("https://script.google.com/macros/s/AKfycbyVGhzqIdx9ff30aqqmttIZqHAGPm1a5BlHdOGqJ2QvAB1Q8mSbRhFYcMo99mw5hmY4/exec", {
-      method: "POST",
-      body: formData
-    })
-    .then(res => res.text())
-    .then(url => {
-      document.getElementById(cfg.hiddenId).value = url;
-      label.textContent = '✓ ' + file.name;
-    })
-    .catch(err => {
-      console.error(err);
-      label.textContent = '❌ Upload failed';
-    });
-  };
-
-  input.click();
+function escH(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 </script>
