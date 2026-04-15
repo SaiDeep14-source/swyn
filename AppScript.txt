@@ -1,19 +1,18 @@
 function doPost(e) {
   try {
-
     if (!e || !e.postData || !e.postData.contents) {
-      throw new Error("No data received");}
-    
-   var sheet = SpreadsheetApp
-   .openById("1C-XiCMomqdFy_XJsciqd2Q-xNDsdetxGa2VGRBbHXmM")
-    .getSheetByName("SWYN EXPERTS DETAILS");
-    
-    var folder = DriveApp.getFolderById("1PEFupJKF5Y92tdjfKkIgFwJIPQwUdu4X");
-   
+      throw new Error("No data received");
+    }
 
     var body = JSON.parse(e.postData.contents);
 
-    // ✅ FILE UPLOAD (base64)
+    var sheet = SpreadsheetApp
+      .openById("1C-XiCMomqdFy_XJsciqd2Q-xNDsdetxGa2VGRBbHXmM")
+      .getSheetByName("SWYN EXPERTS DETAILS");
+
+    var folder = DriveApp.getFolderById("1PEFupJKF5Y92tdjfKkIgFwJIPQwUdu4X");
+
+    // ✅ FILE UPLOAD
     if (body.action === "uploadFile") {
       var blob = Utilities.newBlob(
         Utilities.base64Decode(body.data),
@@ -25,26 +24,45 @@ function doPost(e) {
       file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
 
       return ContentService
-        .createTextOutput(JSON.stringify({ url: file.getUrl() }))
+        .createTextOutput(JSON.stringify({
+          success: true,
+          url: file.getUrl()
+        }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     // ✅ FORM DATA
     if (body) {
+      if (!sheet) throw new Error("Sheet not found");
+
       if (sheet.getLastRow() === 0) {
         sheet.appendRow(Object.keys(body));
       }
+
       sheet.appendRow(Object.values(body));
 
       return ContentService
-        .createTextOutput("SUCCESS")
-        .setMimeType(ContentService.MimeType.TEXT);
+        .createTextOutput(JSON.stringify({
+          success: true,
+          message: "Form submitted"
+        }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
-    return ContentService.createTextOutput("INVALID REQUEST");
+    // fallback
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        success: false,
+        error: "Invalid request"
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
     return ContentService
-      .createTextOutput("ERROR: " + err.message);
+      .createTextOutput(JSON.stringify({
+        success: false,
+        error: err.message
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
   }
 }

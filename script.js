@@ -363,33 +363,42 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    var APPS_SCRIPT_URL ="https://script.google.com/macros/s/AKfycbzNy7sdr89qj80WAb0J9Apyfddwat7GxCVTtbWhXBN0dUz1KK3RonGRuAofiwXmRYI2RQ/exec";
+    var APPS_SCRIPT_URL ="https://script.google.com/macros/s/AKfycbzfn9hRTQ4reXmaYbxBjDKCJ3nSXhiTE5JnzdH53ja75ueH0rgfWO-EvOuuQLdls3T1fQ/exec";
 
-    fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-    .then(function() {
+    function handleSubmitResponse(response) {
+      if (!response.ok) {
+        throw new Error('Server returned status ' + response.status);
+      }
+      return response.json();
+    }
+    function processSubmitResult(result) {
+      if (!result || result.success !== true) {
+        throw new Error(result && result.error ? result.error : 'Submission failed');
+      }
       btn.textContent = 'Submit Application →';
       btn.disabled = false;
       btn.classList.remove('loading');
       current = 'success';
       showStep('success');
+    }
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
     })
+    .then(handleSubmitResponse)
+    .then(processSubmitResult)
     .catch(function(err) {
       console.warn('Submission attempt 1 failed, retrying…', err);
       setTimeout(function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
+          headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(data)
         })
-        .then(function() {
-          btn.textContent = 'Submit Application →';
-          btn.disabled = false;
-          btn.classList.remove('loading');
-          current = 'success';
-          showStep('success');
-        })
+        .then(handleSubmitResponse)
+        .then(processSubmitResult)
         .catch(function(err2) {
           console.error('Submission error after retry:', err2);
           btn.textContent = 'Submit Application →';
@@ -505,7 +514,7 @@ function handleDropFiles(input, zoneId, listId, hiddenId) {
   }
 
   // Upload each file to Google Apps Script as base64 JSON
-  var GAS_URL = "https://script.google.com/macros/s/AKfycbzNy7sdr89qj80WAb0J9Apyfddwat7GxCVTtbWhXBN0dUz1KK3RonGRuAofiwXmRYI2RQ/exec";
+  var GAS_URL = "https://script.google.com/macros/s/AKfycbzfn9hRTQ4reXmaYbxBjDKCJ3nSXhiTE5JnzdH53ja75ueH0rgfWO-EvOuuQLdls3T1fQ/exec";
   var typeMap = { cvZone:'cv', photoZone:'photo', samplesZone:'worksamples' };
   var uploadType = typeMap[zoneId] || 'cv';
 
@@ -515,26 +524,36 @@ function handleDropFiles(input, zoneId, listId, hiddenId) {
     reader.onload = function(ev) {
       var base64 = ev.target.result.split(',')[1];
   fetch(GAS_URL, {
-  method: "POST",
-  body: JSON.stringify({
-    action: 'uploadFile',
-    type: uploadType,
-    fileName: file.name,
-    mimeType: file.type || 'application/octet-stream',
-    data: base64
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      action: 'uploadFile',
+      type: uploadType,
+      fileName: file.name,
+      mimeType: file.type || 'application/octet-stream',
+      data: base64
+    })
   })
-})
-      .then(function() {
-        console.log('File upload request sent: ' + file.name);
+      .then(function(response) {
+        if (!response.ok) {
+          throw new Error('Upload failed with status ' + response.status);
+        }
+        return response.json();
+      })
+      .then(function(result) {
+        if (!result || result.success !== true) {
+          throw new Error(result && result.error ? result.error : 'Upload failed');
+        }
+        console.log('File upload successful: ' + file.name);
       })
       .catch(function(err) {
         if (attempt < 3) {
           // Retry up to 2 more times with a small delay
-          console.warn('Upload attempt ' + attempt + ' failed for ' + file.name + ', retrying…');
+          console.warn('Upload attempt ' + attempt + ' failed for ' + file.name + ', retrying…', err);
           setTimeout(function(){ sendFile(file, attempt + 1); }, 1500 * attempt);
         } else {
           // Silent failure — form still works, file name is stored in hidden field
-          console.warn('Upload background send failed after 3 attempts for: ' + file.name + '. Will be noted in form submission.');
+          console.warn('Upload background send failed after 3 attempts for: ' + file.name + '. Will be noted in form submission.', err);
         }
       });
     };
