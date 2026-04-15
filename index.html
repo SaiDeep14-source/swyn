@@ -17,37 +17,30 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;padding:36px 16px 80px}
 .wrapper{max-width:700px;margin:0 auto}
 
-/* Logo */
 .logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
 .logo-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:.04em}
 
-/* Progress */
 .progress-wrap{margin-bottom:10px}
 .progress-bar{height:5px;background:var(--orange-muted);border-radius:3px;overflow:hidden}
 .progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-light));border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
 .progress-label{font-size:11px;color:var(--muted);text-align:right;margin-top:6px;font-weight:500;letter-spacing:.04em}
 
-/* Card */
 .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:40px 44px;box-shadow:var(--shadow);transition:box-shadow .3s}
 .step-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:8px}
 .card-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.2}
 .card-subtitle{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.65}
 hr.divider{border:none;border-top:1px solid var(--border);margin-bottom:24px}
 
-/* Section heads */
 .section-head{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin:28px 0 18px;display:flex;align-items:center;gap:12px}
 .section-head::before,.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* Form grid */
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}
 .form-grid .full{grid-column:1/-1}
 
-/* Fields */
 .field{display:flex;flex-direction:column;gap:5px}
 label{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
 label .req{color:var(--orange);margin-left:2px}
 
-/* Inputs */
 input[type=text],input[type=email],input[type=tel],input[type=url],select,textarea{
   background:var(--input-bg);border:1.5px solid var(--border);border-radius:var(--radius);
   padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
@@ -62,25 +55,21 @@ input:focus,select:focus,textarea:focus{
 input.valid{border-color:#7cb87f}
 textarea{resize:vertical;min-height:110px;line-height:1.6}
 
-/* Select */
 .select-wrap{position:relative}
 .select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
 .select-wrap select{padding-right:36px;cursor:pointer}
 
-/* Hint & error */
 .hint{font-size:12px;color:var(--muted);line-height:1.5}
 .err-msg{color:var(--error);font-size:12px;display:flex;align-items:center;gap:4px;animation:errIn .18s ease}
 .err-msg::before{content:'⚠';font-size:11px}
 @keyframes errIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 
-/* Other boxes */
 .other-box{display:none;flex-direction:column;gap:6px}
 .other-box.visible{display:flex!important}
 .other-box input,.other-box input:focus{border-color:var(--orange);background:#fff8f4}
 #expertiseOtherBox{flex-direction:column;gap:8px;margin-top:8px}
 #expertiseOtherBox input{border-color:var(--orange);background:#fff8f4}
 
-/* Pills */
 .pill-grid{display:flex;flex-wrap:wrap;gap:8px}
 .pill{
   display:inline-flex;align-items:center;gap:6px;padding:8px 15px;
@@ -92,23 +81,21 @@ textarea{resize:vertical;min-height:110px;line-height:1.6}
 .pill input[type=radio],.pill input[type=checkbox]{accent-color:var(--orange);width:13px;height:13px;flex-shrink:0}
 .pill.selected{border-color:var(--orange);background:var(--orange-muted);color:var(--orange);font-weight:600}
 
-/* Upload */
-.upload-box{border:2px dashed var(--border);border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--input-bg)}
+/* Upload box — simple file input */
+.upload-box{border:2px dashed var(--border);border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--input-bg);position:relative}
 .upload-box:hover{border-color:var(--orange);background:#fdf6f1}
 .upload-box .upload-icon{font-size:30px;margin-bottom:8px}
 .upload-box p{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
 .upload-box span{font-size:12px;color:var(--muted)}
-.upload-box input[type=file]{display:none}
+.upload-box input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
 .upload-done{border-color:var(--orange);background:#fff8f4}
+.upload-done p{color:var(--success)}
 
-/* Rating */
 .rating-group{display:flex;gap:6px}
 .rating-btn{flex:1;padding:10px 4px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--input-bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
 .rating-btn:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px)}
 .rating-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;transform:translateY(-1px)}
-.rating-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
 
-/* Actions */
 .actions{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}
 .btn-back{background:transparent;border:1.5px solid var(--border);color:var(--muted);border-radius:var(--radius);padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s}
 .btn-back:hover{border-color:var(--orange);color:var(--orange)}
@@ -118,35 +105,29 @@ textarea{resize:vertical;min-height:110px;line-height:1.6}
 .btn-next:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-next.loading{opacity:.75;cursor:not-allowed;pointer-events:none}
 
-/* Step dots */
 .step-dots{display:flex;gap:7px;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange-muted);transition:all .35s cubic-bezier(.4,0,.2,1)}
 .dot.done{background:rgba(212,98,26,.4)}
 .dot.active{background:var(--orange);width:24px;border-radius:4px}
 
-/* Step transitions */
 .step{display:none;animation:stepIn .3s ease}
 .step.active{display:block}
 @keyframes stepIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
-/* Success */
 .success{text-align:center;padding:56px 20px;animation:stepIn .4s ease}
 .success-icon{width:76px;height:76px;background:linear-gradient(135deg,var(--orange-muted),#ffe0c8);border-radius:50%;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 4px 20px rgba(212,98,26,.2)}
 .success h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:10px;color:var(--text)}
 .success p{color:var(--muted);font-size:15px;line-height:1.65}
 
-/* Terms */
 .terms-box{background:var(--input-bg);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:border-color .18s}
 .terms-box:hover{border-color:var(--orange)}
 .terms-box input[type=checkbox]{accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;margin-top:3px;cursor:pointer}
 .terms-box p{font-size:13px;color:var(--muted);line-height:1.6}
 
-/* Add button micro-style */
 .add-btn{padding:10px 18px;background:var(--orange);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;transition:all .15s;box-shadow:0 1px 4px rgba(212,98,26,.2)}
 .add-btn:hover{background:var(--orange-light);transform:translateY(-1px)}
 .add-btn:active{transform:translateY(0)}
 
-/* Char counter */
 .char-count{font-size:11px;color:var(--muted);text-align:right;transition:color .2s}
 .char-count.warn{color:#e67e22}
 .char-count.over{color:var(--error)}
@@ -162,29 +143,21 @@ textarea{resize:vertical;min-height:110px;line-height:1.6}
 }
 </style>
 <script>
-// Defined early so inline onchange/onkeydown attributes can call these before body scripts load
 function allowPhoneKeys(e) {
-  // Allow: backspace, delete, tab, escape, enter, arrows, home, end
   if ([8,9,13,27,46,35,36,37,38,39,40].indexOf(e.keyCode) !== -1) return true;
-  // Allow: + only at start (position 0)
   if (e.key === '+') {
     var inp = e.target;
     if (inp.selectionStart === 0 && inp.value.indexOf('+') === -1) return true;
     e.preventDefault(); return false;
   }
-  // Allow: spaces and hyphens for formatting
   if (e.key === ' ' || e.key === '-') return true;
-  // Allow: numbers 0-9
   if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) return true;
-  // Block everything else
   e.preventDefault(); return false;
 }
 
 function validatePhone(inp) {
-  // Remove everything except +, digits, spaces, hyphens
   var val = inp.value.replace(/[^\d\+\s\-]/g, '');
   inp.value = val;
-  // Count digits only
   var digits = val.replace(/\D/g,'');
   var wrap = inp.closest('.field');
   var err = wrap && wrap.querySelector('.phone-err');
@@ -201,6 +174,7 @@ function validatePhone(inp) {
     if (err) err.remove();
   }
 }
+
 function showOther(select, boxId, triggerVal) {
   var box = document.getElementById(boxId);
   if (!box) return;
@@ -213,17 +187,33 @@ function showOther(select, boxId, triggerVal) {
     if (inp) inp.value = '';
   }
 }
-function fileSelected(input, labelId) {
-  var label = document.getElementById(labelId);
-  var box = input.closest('.upload-box');
-  var field = box ? box.closest('.field') : null;
-  if (input.files && input.files.length > 0) {
-    var name = input.files.length > 1 ? input.files.length + ' files selected' : input.files[0].name;
-    label.textContent = '✓ ' + name;
-    if (box) { box.classList.add('upload-done'); box.style.borderStyle = 'solid'; box.style.borderColor = ''; box.style.background = ''; }
-    if (field) { var e = field.querySelector('.err-msg'); if(e) e.remove(); }
+
+/* ── File upload: simple browser file input, no OAuth ── */
+var _uploadedFiles = { cv: null, photo: null, worksamples: null };
+
+function handleFileSelect(input, type) {
+  var cfg = {
+    cv:          { labelId: 'cvLabel',          boxId: 'cvUploadBox',          nameId: 'cvFileName' },
+    photo:       { labelId: 'photoLabel',       boxId: 'photoUploadBox',       nameId: 'photoFileName' },
+    worksamples: { labelId: 'workSamplesLabel', boxId: 'workSamplesUploadBox', nameId: 'workSamplesFileName' }
+  }[type];
+
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  _uploadedFiles[type] = file;
+
+  var box = document.getElementById(cfg.boxId);
+  var lbl = document.getElementById(cfg.labelId);
+  if (lbl) lbl.textContent = '✓ ' + file.name;
+  if (box) {
+    box.classList.add('upload-done');
+    box.style.borderStyle = 'solid';
   }
+  // Clear any validation error on this field
+  var field = box ? box.closest('.field') : null;
+  if (field) { var e = field.querySelector('.err-msg'); if (e) e.remove(); }
 }
+
 var selectedExpertise = [];
 function addExpertise(select) {
   var val = select.value;
@@ -268,6 +258,7 @@ function renderTags() {
   var wrap = c.closest('.field'); var e = wrap && wrap.querySelector('.err-msg'); if (e) e.remove();
 }
 function updateExpertiseHidden() { document.getElementById('areasOfExpertiseHidden').value = selectedExpertise.join(', '); }
+
 var notableCompanies = [];
 function addNotableCompany() {
   var inp = document.getElementById('notableCompanyInput');
@@ -288,6 +279,7 @@ function renderCompanyTags() {
   });
 }
 function updateCompaniesHidden() { document.getElementById('notableCompaniesHidden').value = notableCompanies.join(', '); }
+
 var pastClients = [];
 function addPastClient() {
   var inp = document.getElementById('pastClientInput');
@@ -308,6 +300,7 @@ function renderPastClientTags() {
   });
 }
 function updatePastClientsHidden() { document.getElementById('pastClientsHidden').value = pastClients.join(', '); }
+
 function selectRating(fieldId, groupId, val) {
   document.getElementById(fieldId).value = val;
   var btns = document.getElementById(groupId).querySelectorAll('.rating-btn');
@@ -321,7 +314,7 @@ function selectRating(fieldId, groupId, val) {
 <body>
 <div class="wrapper">
   <div class="logo">
-    <img style="mix-blend-mode:multiply;background:transparent;" src="data:image/png;base64,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" alt="SWYN" style="height:48px;width:auto;"/>
+    <img style="mix-blend-mode:multiply;background:transparent;" src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCACMAUkDASIAAhEBAxEB/8QAHAABAAIDAQEBAAAAAAAAAAAAAAYHAwQFAgEI/8QASxAAAQMDAQQHAwYMAgkFAAAAAQACAwQFEQYHEiExE0FRYXGBkQgUIjI2dKGysxUWIzdCUnKCkqKxwXPwJCYnM0NiY9HhVHWDk8L/xAAaAQEAAgMBAAAAAAAAAAAAAAAABAUBAgMG/8QAOhEAAQMCAwUEBwcEAwAAAAAAAQACAwQRBRIhMUFRYXGBkcHwBhMUMnKhsRUiIyQ0NWJCUtHhJTOC/9oADAMBAAIRAxEAPwD9loiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiIiL//Z" alt="SWYN" style="height:48px;width:auto;"/>
   </div>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
@@ -457,7 +450,6 @@ function selectRating(fieldId, groupId, val) {
           </div>
         </div>
 
-        <!-- EXPERTISE section -->
         <div class="full" style="margin-top:8px;">
           <div class="section-head">Expertise</div>
         </div>
@@ -493,23 +485,21 @@ function selectRating(fieldId, groupId, val) {
           </div>
         </div>
 
-        <!-- NOTABLE COMPANIES section -->
         <div class="full" style="margin-top:8px;">
           <div class="section-head">Notable Companies</div>
         </div>
 
         <div class="field full">
           <label>Notable companies / organisations you have worked for</label>
-          <span class="hint" style="margin-bottom:8px;display:block;">Type a company name and press <strong>Add</strong> or hit Enter. These will be highlighted on your SWYN profile.</span>
+          <span class="hint" style="margin-bottom:8px;display:block;">Type a company name and press <strong>Add</strong> or hit Enter.</span>
           <div style="display:flex;gap:10px;align-items:flex-start;">
-            <input type="text" id="notableCompanyInput" placeholder="e.g. Goldman Sachs, Infosys, McKinsey…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addNotableCompany();}"/>
+            <input type="text" id="notableCompanyInput" placeholder="e.g. Goldman Sachs, Infosys, McKinsey…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.keyCode===13){event.preventDefault();addNotableCompany();}"/>
             <button type="button" onclick="addNotableCompany()" class="add-btn">+ Add</button>
           </div>
           <div id="notableCompanyTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
           <input type="hidden" id="notableCompaniesHidden"/>
         </div>
 
-        <!-- TYPES OF ENGAGEMENT section -->
         <div class="full" style="margin-top:8px;">
           <div class="section-head">Engagements</div>
         </div>
@@ -527,16 +517,15 @@ function selectRating(fieldId, groupId, val) {
           <input type="hidden" id="engagementTypes"/>
         </div>
 
-        <!-- PAST CLIENTS section -->
         <div class="full" style="margin-top:8px;">
           <div class="section-head">Past Clients &amp; Advisory Work</div>
         </div>
 
         <div class="field full">
           <label>Past clients or companies you've advised (as a consultant / advisor)</label>
-          <span class="hint" style="margin-bottom:8px;display:block;">Type a company or client name and press <strong>Add</strong> or hit Enter. You may anonymise if needed (e.g. "Series B Fintech, Mumbai").</span>
+          <span class="hint" style="margin-bottom:8px;display:block;">Type a company or client name and press <strong>Add</strong> or hit Enter. You may anonymise if needed.</span>
           <div style="display:flex;gap:10px;align-items:flex-start;">
-            <input type="text" id="pastClientInput" placeholder="e.g. Razorpay, Nykaa, Mid-size FMCG brand…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addPastClient();}"/>
+            <input type="text" id="pastClientInput" placeholder="e.g. Razorpay, Nykaa, Mid-size FMCG brand…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.keyCode===13){event.preventDefault();addPastClient();}"/>
             <button type="button" onclick="addPastClient()" class="add-btn">+ Add</button>
           </div>
           <div id="pastClientTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
@@ -568,7 +557,7 @@ function selectRating(fieldId, groupId, val) {
           </div>
           <div id="expertiseTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
           <div id="expertiseOtherBox" style="display:none;position:relative;">
-            <input type="text" id="expertiseOther" placeholder="Type your expertise area…" style="width:100%;padding-right:70px;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addExpertiseOther();}"  />
+            <input type="text" id="expertiseOther" placeholder="Type your expertise area…" style="width:100%;padding-right:70px;" onkeydown="if(event.key==='Enter'||event.keyCode===13){event.preventDefault();addExpertiseOther();}"/>
             <button type="button" onclick="addExpertiseOther()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:6px 14px;background:var(--orange);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Add</button>
           </div>
           <input type="hidden" id="areasOfExpertiseHidden"/>
@@ -757,22 +746,22 @@ function selectRating(fieldId, groupId, val) {
 
         <div class="field full">
           <label>Upload your CV / Resume <span class="req">*</span></label>
-          <div class="upload-box" id="cvUploadBox" onclick="driveUpload('cv')" style="cursor:pointer;">
+          <div class="upload-box" id="cvUploadBox">
             <div class="upload-icon">📄</div>
-            <p id="cvLabel">Click to upload via Google Drive</p>
-            <span>PDF or Word — sign in with Google to upload</span>
+            <p id="cvLabel">Click to upload your CV / Resume</p>
+            <span>PDF or Word (.pdf, .doc, .docx)</span>
+            <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleFileSelect(this,'cv')"/>
           </div>
-          <input type="hidden" id="cvDriveUrl"/>
         </div>
 
         <div class="field full">
           <label>Upload a professional photo <span style="color:var(--muted);font-weight:400;">(optional but recommended)</span></label>
-          <div class="upload-box" id="photoUploadBox" onclick="driveUpload('photo')" style="cursor:pointer;">
+          <div class="upload-box" id="photoUploadBox">
             <div class="upload-icon">🖼️</div>
-            <p id="photoLabel">Click to upload via Google Drive</p>
-            <span>JPG or PNG — sign in with Google to upload</span>
+            <p id="photoLabel">Click to upload your photo</p>
+            <span>JPG or PNG (.jpg, .jpeg, .png)</span>
+            <input type="file" id="photoFile" accept=".jpg,.jpeg,.png" onchange="handleFileSelect(this,'photo')"/>
           </div>
-          <input type="hidden" id="photoDriveUrl"/>
         </div>
 
         <div class="full"><div class="section-head">Online Presence</div></div>
@@ -794,12 +783,12 @@ function selectRating(fieldId, groupId, val) {
 
         <div class="field full">
           <label>Upload work samples <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-          <div class="upload-box" id="workSamplesUploadBox" onclick="driveUpload('worksamples')" style="cursor:pointer;">
+          <div class="upload-box" id="workSamplesUploadBox">
             <div class="upload-icon">📁</div>
-            <p id="workSamplesLabel">Click to upload via Google Drive</p>
-            <span>Anonymised deliverables, models, frameworks — sign in with Google to upload</span>
+            <p id="workSamplesLabel">Click to upload work samples</p>
+            <span>Anonymised deliverables, models, frameworks (.pdf, .doc, .ppt, .xls, .xlsx)</span>
+            <input type="file" id="workSamplesFile" accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx" onchange="handleFileSelect(this,'worksamples')"/>
           </div>
-          <input type="hidden" id="workSamplesDriveUrl"/>
         </div>
 
       </div>
@@ -833,7 +822,6 @@ function selectRating(fieldId, groupId, val) {
 
       </div>
 
-      <!-- Website listing consent -->
       <div style="margin-top:28px;">
         <div class="section-head" style="margin-top:0;margin-bottom:20px;">Profile Listing</div>
         <div class="field full">
@@ -848,7 +836,6 @@ function selectRating(fieldId, groupId, val) {
         </div>
       </div>
 
-      <!-- Terms -->
       <div style="margin-top:28px;">
         <label class="terms-box">
           <input type="checkbox" id="termsCheck"/>
@@ -868,15 +855,14 @@ function selectRating(fieldId, groupId, val) {
         <div class="success-icon">&#10003;</div>
         <h2>Application Submitted!</h2>
         <p>Thank you for applying to join SWYN's expert mentor network.<br/>Our team will review your profile and get in touch within <strong>3–5 business days</strong>.</p>
-        <p style="margin-top:20px;font-size:13px;color:var(--muted);">Questions? Write to us at <a href="/cdn-cgi/l/email-protection#0d64636b624d7e7a7463236463" style="color:var(--orange);"><span class="__cf_email__" data-cfemail="630a0d050c2310141a0d4d0a0d">[email&#160;protected]</span></a></p>
+        <p style="margin-top:20px;font-size:13px;color:var(--muted);">Questions? Write to us at <a href="mailto:hello@swyn.in" style="color:var(--orange);">hello@swyn.in</a></p>
       </div>
     </div>
 
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ── Step & validation ──
+<script>
 var current = 1; var totalSteps = 5;
 
 function showStep(n) {
@@ -887,7 +873,6 @@ function showStep(n) {
   document.getElementById('progressFill').style.width = pct+'%';
   var lbl = document.getElementById('progressLabel');
   if(lbl) lbl.textContent = n==='success' ? 'Complete!' : 'Step '+n+' of '+totalSteps;
-  // Update dots
   document.querySelectorAll('.dot').forEach(function(d,i){
     d.classList.remove('active','done');
     if(n==='success'){ d.classList.add('done'); }
@@ -944,8 +929,6 @@ function getPillValues(gridId) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
-
-  // Global Enter key → move to next field or advance step
   document.addEventListener('keydown', function(e) {
     if (e.key !== 'Enter' && e.keyCode !== 13) return;
     var active = document.activeElement;
@@ -956,33 +939,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (skipIds.indexOf(id) !== -1) return;
     e.preventDefault();
     e.stopPropagation();
-
-    // Field order: Enter moves to next field
     var fieldOrder = ['firstName','lastName','primaryEmail','phoneNumber','headline',
                       'jobTitle','currentCompany',
                       'linkedinProfile','websiteUrl','articleUrl',
                       'topAchievements','additionalInfo'];
     var stepLast = {'headline':'next1','currentCompany':'next2','articleUrl':'next4','additionalInfo':'btnSubmit'};
     var idx = fieldOrder.indexOf(id);
-
     if (idx !== -1 && idx < fieldOrder.length - 1 && !stepLast[id]) {
-      // Move focus to next field
       var nextField = document.getElementById(fieldOrder[idx + 1]);
       if (nextField) { nextField.focus(); return; }
     }
     if (stepLast[id]) {
-      // Last field in step — click Next
       var btn = document.getElementById(stepLast[id]);
       if (btn) { btn.click(); return; }
     }
-
-    // Fallback: advance current step
     var nextIds = ['next1', 'next2', 'next3', 'next4', 'btnSubmit'];
-    var btn = document.getElementById(nextIds[current - 1]);
-    if (btn) btn.click();
+    var btn2 = document.getElementById(nextIds[current - 1]);
+    if (btn2) btn2.click();
   });
 
-  // Auto-clear errors + live validation feedback
   document.querySelectorAll('input,select,textarea').forEach(function(el) {
     ['input','change'].forEach(function(evt){
       el.addEventListener(evt, function(){
@@ -992,20 +967,16 @@ document.addEventListener('DOMContentLoaded', function() {
         var e = wrap && wrap.querySelector('.err-msg'); if(e) e.remove();
       });
     });
-    // Show green border when field has valid content and loses focus
     el.addEventListener('blur', function(){
-      if(el.type === 'hidden' || el.tagName === 'SELECT') return;
+      if(el.type === 'hidden' || el.type === 'file' || el.tagName === 'SELECT') return;
       var fieldWrap = el.closest('.field');
       if(el.value && el.value.trim() && !(fieldWrap && fieldWrap.querySelector('.err-msg'))){
         el.style.borderColor = '#7cb87f';
       }
     });
-    el.addEventListener('focus', function(){
-      el.style.borderColor = '';
-    });
+    el.addEventListener('focus', function(){ el.style.borderColor = ''; });
   });
 
-  // Live email format hint
   var emailEl = document.getElementById('primaryEmail');
   if(emailEl){
     emailEl.addEventListener('blur', function(){
@@ -1015,28 +986,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Pill radio/checkbox toggle
   document.querySelectorAll('.pill input').forEach(function(inp) {
     inp.addEventListener('change', function() {
       if (inp.type === 'radio') {
         var name = inp.name;
         document.querySelectorAll('.pill input[name="'+name+'"]').forEach(function(r){ r.closest('.pill').classList.remove('selected'); });
         inp.closest('.pill').classList.add('selected');
-        // store in hidden
         if (name==='simultaneous') document.getElementById('simultaneousEngagements').value = inp.value;
         if (name==='websiteListing') { document.getElementById('websiteListingConsent').value = inp.value; clearPillErr('websiteListingGrid'); }
       } else {
         inp.closest('.pill').classList.toggle('selected', inp.checked);
         var gridId = inp.closest('.pill-grid') && inp.closest('.pill-grid').id;
-        if (gridId === 'engagementTypeGrid') {
-          document.getElementById('engagementTypes').value = getPillValues('engagementTypeGrid');
-        }
-        if (gridId === 'workModeGrid') {
-          document.getElementById('workMode').value = getPillValues('workModeGrid');
-        }
-        if (gridId === 'travelGrid') {
-          document.getElementById('willingToTravel').value = getPillValues('travelGrid');
-        }
+        if (gridId === 'engagementTypeGrid') document.getElementById('engagementTypes').value = getPillValues('engagementTypeGrid');
+        if (gridId === 'workModeGrid') document.getElementById('workMode').value = getPillValues('workModeGrid');
+        if (gridId === 'travelGrid') document.getElementById('willingToTravel').value = getPillValues('travelGrid');
         if (gridId) clearPillErr(gridId);
       }
     });
@@ -1054,14 +1017,12 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     if (getVal('city')==='Other') checks.push({id:'cityOther',msg:'Please specify your city.'});
     var ok = validate(checks);
-    // Phone format check
     var phone = document.getElementById('phoneNumber');
     var digits = phone.value.replace(/\D/g,'');
     if (phone.value && (digits.length < 7 || digits.length > 15)) {
       setErr('phoneNumber','Enter a valid phone number (7–15 digits with country code).');
       ok = false;
     }
-    // Email format check
     var email = document.getElementById('primaryEmail');
     if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
       setErr('primaryEmail','Please enter a valid email address.');
@@ -1081,7 +1042,6 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
     if (getVal('primaryIndustry')==='Other') checks.push({id:'industryOther',msg:'Please specify your industry.'});
     var ok = validate(checks);
-    // Sector check
     if (!getPillValues('sectorGrid')) {
       var sg = document.getElementById('sectorGrid');
       sg.style.outline = '2px solid #e03030'; sg.style.borderRadius = '8px';
@@ -1089,7 +1049,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!wrap.querySelector('.err-msg')) { var e=document.createElement('span');e.className='err-msg';e.style.display='block';e.textContent='Please select at least one key sector.';wrap.appendChild(e); }
       ok = false;
     } else { clearPillErr('sectorGrid'); }
-    // Expertise check
     if (!getVal('areasOfExpertiseHidden')) {
       var ef = document.getElementById('areasOfExpertise');
       ef.style.borderColor = '#e03030';
@@ -1097,7 +1056,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!wrap2.querySelector('.err-msg')) { var e2=document.createElement('span');e2.className='err-msg';e2.textContent='Please select at least one area of expertise.';wrap2.appendChild(e2); }
       ok = false;
     } else { clearErr('areasOfExpertise'); }
-    // Engagement types — re-sync hidden field first
     var engVal = getPillValues('engagementTypeGrid');
     document.getElementById('engagementTypes').value = engVal;
     if (!engVal) {
@@ -1122,7 +1080,6 @@ document.addEventListener('DOMContentLoaded', function() {
       {id:'formalMentor',msg:'Please select an option.'},
     ];
     var ok = validate(checks);
-    // Startup stage check
     if (!getPillValues('startupStageGrid')) {
       var sg = document.getElementById('startupStageGrid');
       sg.style.outline = '2px solid #e03030'; sg.style.borderRadius = '8px';
@@ -1138,21 +1095,22 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('next4').addEventListener('click', function() {
     var checks = [{id:'linkedinProfile',msg:'Please enter your LinkedIn profile URL.'}];
     var ok = validate(checks);
-    // CV upload check — now uses Google Drive URL
-    var cvUrl = document.getElementById('cvDriveUrl');
-    var cvBox = document.getElementById('cvUploadBox');
-    var cvField = cvBox ? cvBox.closest('.field') : null;
-    if (!cvUrl || !cvUrl.value) {
+    // CV upload check — must have selected a file
+    if (!_uploadedFiles.cv) {
+      var cvBox = document.getElementById('cvUploadBox');
+      var cvField = cvBox ? cvBox.closest('.field') : null;
       if (cvBox) { cvBox.style.borderColor = '#c0392b'; cvBox.style.background = '#fff5f5'; }
       if (cvField && !cvField.querySelector('.err-msg')) {
         var cvErr = document.createElement('span');
-        cvErr.className = 'err-msg'; cvErr.textContent = 'Please upload your CV or Resume via Google Drive.';
+        cvErr.className = 'err-msg'; cvErr.textContent = 'Please upload your CV or Resume.';
         cvField.appendChild(cvErr);
       }
       ok = false;
     } else {
-      if (cvBox) { cvBox.style.borderColor = ''; cvBox.style.background = ''; }
-      if (cvField) { var e = cvField.querySelector('.err-msg'); if(e) e.remove(); }
+      var cvBox2 = document.getElementById('cvUploadBox');
+      if (cvBox2) { cvBox2.style.borderColor = ''; cvBox2.style.background = ''; }
+      var cvField2 = cvBox2 ? cvBox2.closest('.field') : null;
+      if (cvField2) { var ce = cvField2.querySelector('.err-msg'); if(ce) ce.remove(); }
     }
     if (ok) { current=5; showStep(current); } else { scrollToFirstError(); }
   });
@@ -1160,11 +1118,8 @@ document.addEventListener('DOMContentLoaded', function() {
   // STEP 5
   document.getElementById('back5').addEventListener('click', function(){ current=4; showStep(current); });
   document.getElementById('btnSubmit').addEventListener('click', function() {
-    var checks = [
-      {id:'topAchievements', msg:'Please share your top achievements.'},
-    ];
+    var checks = [{id:'topAchievements', msg:'Please share your top achievements.'}];
     var ok = validate(checks);
-    // Website listing consent — radio pill, read directly
     var listingChecked = document.querySelector('#websiteListingGrid input:checked');
     var listingVal = listingChecked ? listingChecked.value : '';
     document.getElementById('websiteListingConsent').value = listingVal;
@@ -1190,7 +1145,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (!ok || !termsOk) { scrollToFirstError(); return; }
 
-    var data = {
+    var btn = document.getElementById('btnSubmit');
+    btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
+
+    // Build FormData to include the actual file binaries
+    var formData = new FormData();
+
+    var textData = {
       'Full Name': getVal('firstName')+' '+getVal('lastName'),
       'Primary Email Address': getVal('primaryEmail'),
       'Phone Number (including country code)': getVal('phoneNumber'),
@@ -1202,49 +1163,47 @@ document.addEventListener('DOMContentLoaded', function() {
       'Current Company/Organization': getVal('currentCompany'),
       'Total Years of Professional Experience': getVal('yearsExperience'),
       'Primary Industry of Expertise': getVal('primaryIndustry')==='Other'?getVal('industryOther'):getVal('primaryIndustry'),
-      'Please provide a brief biography/professional summary': getVal('biography'),
+      'Brief biography/professional summary': getVal('biography'),
       'Key sectors / industries': getPillValues('sectorGrid'),
-      'Type of companies you have worked with': getPillValues('companyTypeGrid'),
+      'Type of companies worked with': getPillValues('companyTypeGrid'),
       'Notable companies worked for': getVal('notableCompaniesHidden'),
       'Types of engagements open to': getVal('engagementTypes'),
       'Past clients or companies advised': getVal('pastClientsHidden'),
       'Specific Areas of Expertise for Mentorship': getVal('areasOfExpertiseHidden'),
-      'Preferred hourly rate card (In USD)': getVal('hourlyRate'),
-      'Preferred hourly rate card (In INR)': getVal('hourlyRateINR'),
-      "If 'Negotiable' (USD), please specify details:": getVal('rateNegotiable'),
-      "If 'Negotiable' (INR), please specify details:": getVal('rateNegotiableINR'),
-      'Hours per month for mentoring startup founders': getVal('hoursPerMonth'),
+      'Preferred hourly rate (USD)': getVal('hourlyRate'),
+      'Preferred hourly rate (INR)': getVal('hourlyRateINR'),
+      'Negotiable rate details (USD)': getVal('rateNegotiable'),
+      'Negotiable rate details (INR)': getVal('rateNegotiableINR'),
+      'Hours per month for mentoring': getVal('hoursPerMonth'),
       'Number of simultaneous engagements': getVal('simultaneousEngagements'),
       'Work mode preference': getVal('workMode'),
-      'Willingness to travel for events/meetups': getVal('willingToTravel'),
+      'Willingness to travel': getVal('willingToTravel'),
       'Client types most comfortable with': getPillValues('clientTypeGrid'),
-      'What kind of mandates excite you most?': getPillValues('mandateGrid'),
-      'Do you require an NDA or formal agreement?': getVal('requireNDA'),
-      'Experience level in mentoring early-stage startups': getVal('mentoringExperience'),
-      'Previously served as a formal mentor/advisor/board member?': getVal('formalMentor'),
-      'Equipped to mentor stage of startup development': getPillValues('startupStageGrid'),
-      'Link to your LinkedIn Profile': getVal('linkedinProfile'),
+      'Mandates of interest': getPillValues('mandateGrid'),
+      'Requires NDA or formal agreement': getVal('requireNDA'),
+      'Experience level in mentoring startups': getVal('mentoringExperience'),
+      'Previously served as formal mentor/advisor/board member': getVal('formalMentor'),
+      'Equipped to mentor startup stage': getPillValues('startupStageGrid'),
+      'LinkedIn Profile': getVal('linkedinProfile'),
       'Personal website / portfolio': getVal('websiteUrl'),
-      'Any published articles or media mentions': getVal('articleUrl'),
+      'Published articles or media mentions': getVal('articleUrl'),
       'Top Achievements': getVal('topAchievements'),
       'Consent to list on swyn.in': getVal('websiteListingConsent'),
-      'Anything else you would like SWYN to know?': getVal('additionalInfo'),
-      'CV / Resume (Google Drive)': getVal('cvDriveUrl'),
-      'Professional Photo (Google Drive)': getVal('photoDriveUrl'),
-      'Work Samples (Google Drive)': getVal('workSamplesDriveUrl'),
+      'Anything else': getVal('additionalInfo'),
       'Submitted At': new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})
     };
 
-    var btn = document.getElementById('btnSubmit');
-    btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
+    formData.append('data', JSON.stringify(textData));
+    if (_uploadedFiles.cv)          formData.append('cv',          _uploadedFiles.cv,          _uploadedFiles.cv.name);
+    if (_uploadedFiles.photo)       formData.append('photo',       _uploadedFiles.photo,       _uploadedFiles.photo.name);
+    if (_uploadedFiles.worksamples) formData.append('worksamples', _uploadedFiles.worksamples, _uploadedFiles.worksamples.name);
 
     var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFtY3KOpsoRQZiEvvARX-uwc9bG2Gj2EkdpCPvAIcErLkwTqN_7zIwLVKEqwI6Q3O1/exec';
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: formData
     })
     .then(function() {
       btn.textContent = 'Submit Application →';
@@ -1263,155 +1222,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
 }); // end DOMContentLoaded
-
-// ── Google Drive Upload via resumable upload + Drive API ──────────────────
-// Replace these with your actual values from Google Cloud Console
-var GDRIVE_CLIENT_ID   = '135903158453-a5uh1um865qs3he2jvac56n4gjbf99mm.apps.googleusercontent.com';   // OAuth 2.0 Client ID
-var GDRIVE_FOLDER_ID   = '1Qf-7mIeXN13tPWbcR_OHbvxwAWc-lhlg'; // Target folder in Drive
-
-var _driveTokenClient = null;
-var _driveAccessToken = null;
-var _pendingUploadType = null;
-
-// Map upload type → config
-var _uploadConfig = {
-  cv:          { hiddenId: 'cvDriveUrl',          labelId: 'cvLabel',          boxId: 'cvUploadBox',          accept: '.pdf,.doc,.docx',                     prompt: 'Select your CV / Resume (PDF or Word)' },
-  photo:       { hiddenId: 'photoDriveUrl',        labelId: 'photoLabel',       boxId: 'photoUploadBox',       accept: '.jpg,.jpeg,.png',                     prompt: 'Select your professional photo (JPG or PNG)' },
-  worksamples: { hiddenId: 'workSamplesDriveUrl',  labelId: 'workSamplesLabel', boxId: 'workSamplesUploadBox', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx', prompt: 'Select your work sample file' }
-};
-
-var _gsiLoaded = false;
-var _gsiLoading = false;
-var _gsiQueue = [];
-
-function _onGsiLoaded() {
-  _gsiLoaded = true;
-  _driveTokenClient = google.accounts.oauth2.initTokenClient({
-    client_id: GDRIVE_CLIENT_ID,
-    scope: 'https://www.googleapis.com/auth/drive.file',
-    callback: function(tokenResponse) {
-      if (tokenResponse && tokenResponse.access_token) {
-        _driveAccessToken = tokenResponse.access_token;
-        _openFilePicker(_pendingUploadType);
-      }
-    }
-  });
-  // Flush queued calls
-  _gsiQueue.forEach(function(t) { driveUpload(t); });
-  _gsiQueue = [];
-}
-
-function driveUpload(type) {
-  _pendingUploadType = type;
-  if (!_gsiLoaded) {
-    _gsiQueue.push(type);
-    if (!_gsiLoading) {
-      _gsiLoading = true;
-      var script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      script.onload = _onGsiLoaded;
-      script.onerror = function() {
-        _gsiLoading = false;
-        alert('Could not load Google Sign-In. Please check your internet connection.');
-      };
-      document.head.appendChild(script);
-    }
-    return;
-  }
-  if (_driveAccessToken) {
-    _openFilePicker(type);
-  } else {
-    _driveTokenClient.requestAccessToken({ prompt: '' });
-  }
-}
-
-function _openFilePicker(type) {
-  var cfg = _uploadConfig[type];
-  var fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = cfg.accept;
-  fileInput.style.display = 'none';
-  document.body.appendChild(fileInput);
-  fileInput.addEventListener('change', function() {
-    if (fileInput.files && fileInput.files[0]) {
-      _uploadFileToDrive(fileInput.files[0], type);
-    }
-    document.body.removeChild(fileInput);
-  });
-  fileInput.click();
-}
-
-function _uploadFileToDrive(file, type) {
-  var cfg = _uploadConfig[type];
-  var box = document.getElementById(cfg.boxId);
-  var lbl = document.getElementById(cfg.labelId);
-  if (lbl) lbl.textContent = '⏳ Uploading…';
-  if (box) { box.style.borderStyle = 'solid'; box.style.borderColor = 'var(--orange)'; }
-
-  // Step 1: initiate resumable upload session
-  var metadata = {
-    name: file.name,
-    mimeType: file.type || 'application/octet-stream',
-    parents: GDRIVE_FOLDER_ID ? [GDRIVE_FOLDER_ID] : []
-  };
-
-  fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + _driveAccessToken,
-      'Content-Type': 'application/json; charset=UTF-8',
-      'X-Upload-Content-Type': file.type || 'application/octet-stream',
-      'X-Upload-Content-Length': file.size
-    },
-    body: JSON.stringify(metadata)
-  })
-  .then(function(res) {
-    if (!res.ok) throw new Error('Failed to initiate upload session');
-    var uploadUrl = res.headers.get('Location');
-    // Step 2: upload file bytes
-    return fetch(uploadUrl, {
-      method: 'PUT',
-      headers: { 'Content-Type': file.type || 'application/octet-stream' },
-      body: file
-    });
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(fileData) {
-    // Step 3: make file shareable (anyone with link can view)
-    return fetch('https://www.googleapis.com/drive/v3/files/' + fileData.id + '/permissions', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + _driveAccessToken,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ role: 'reader', type: 'anyone' })
-    }).then(function() { return fileData; });
-  })
-  .then(function(fileData) {
-    var shareUrl = 'https://drive.google.com/file/d/' + fileData.id + '/view?usp=sharing';
-    document.getElementById(cfg.hiddenId).value = shareUrl;
-    if (lbl) lbl.textContent = '✓ ' + file.name;
-    if (box) {
-      box.classList.add('upload-done');
-      box.style.borderColor = 'var(--orange)';
-      box.style.borderStyle = 'solid';
-      box.style.background = '#fff8f4';
-    }
-    // Clear any error on this field
-    var field = box ? box.closest('.field') : null;
-    if (field) { var e = field.querySelector('.err-msg'); if(e) e.remove(); }
-  })
-  .catch(function(err) {
-    console.error('Drive upload error:', err);
-    if (lbl) lbl.textContent = '❌ Upload failed — try again';
-    if (box) { box.style.borderColor = '#c0392b'; box.style.background = '#fff5f5'; }
-    // Token may have expired — clear it so next click re-authenticates
-    _driveAccessToken = null;
-  });
-}
-
 </script>
 </body>
 </html>
