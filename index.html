@@ -1,586 +1,1417 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SWYN Expert Mentor Registration</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="/styles.css"/>
-  <script src="/script.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SWYN Expert Mentor Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f0e8;--card:#faf7f2;--orange:#d4621a;--orange-light:#e8793a;
+  --orange-muted:#f0e0d0;--text:#1a1208;--muted:#7a6a54;--border:#ddd5c4;
+  --input-bg:#ffffff;--radius:8px;--error:#c0392b;--success:#2e7d32;
+  --shadow:0 4px 24px rgba(0,0,0,.08);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;padding:36px 16px 80px}
+.wrapper{max-width:700px;margin:0 auto}
+
+/* Logo */
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.logo-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:.04em}
+
+/* Progress */
+.progress-wrap{margin-bottom:10px}
+.progress-bar{height:5px;background:var(--orange-muted);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--orange-light));border-radius:3px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.progress-label{font-size:11px;color:var(--muted);text-align:right;margin-top:6px;font-weight:500;letter-spacing:.04em}
+
+/* Card */
+.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:40px 44px;box-shadow:var(--shadow);transition:box-shadow .3s}
+.step-label{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--orange);margin-bottom:8px}
+.card-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px;line-height:1.2}
+.card-subtitle{font-size:14px;color:var(--muted);margin-bottom:24px;line-height:1.65}
+hr.divider{border:none;border-top:1px solid var(--border);margin-bottom:24px}
+
+/* Section heads */
+.section-head{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-align:center;margin:28px 0 18px;display:flex;align-items:center;gap:12px}
+.section-head::before,.section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* Form grid */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}
+.form-grid .full{grid-column:1/-1}
+
+/* Fields */
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-size:13px;font-weight:500;color:var(--text);line-height:1.4}
+label .req{color:var(--orange);margin-left:2px}
+
+/* Inputs */
+input[type=text],input[type=email],input[type=tel],input[type=url],select,textarea{
+  background:var(--input-bg);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);
+  width:100%;transition:border-color .18s, box-shadow .18s;outline:none;
+  -webkit-appearance:none;appearance:none;
+}
+input::placeholder,textarea::placeholder{color:#c0aa90}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--orange);
+  box-shadow:0 0 0 3px rgba(212,98,26,.12);
+}
+input.valid{border-color:#7cb87f}
+textarea{resize:vertical;min-height:110px;line-height:1.6}
+
+/* Select */
+.select-wrap{position:relative}
+.select-wrap::after{content:'▾';position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.select-wrap select{padding-right:36px;cursor:pointer}
+
+/* Hint & error */
+.hint{font-size:12px;color:var(--muted);line-height:1.5}
+.err-msg{color:var(--error);font-size:12px;display:flex;align-items:center;gap:4px;animation:errIn .18s ease}
+.err-msg::before{content:'⚠';font-size:11px}
+@keyframes errIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* Other boxes */
+.other-box{display:none;flex-direction:column;gap:6px}
+.other-box.visible{display:flex!important}
+.other-box input,.other-box input:focus{border-color:var(--orange);background:#fff8f4}
+#expertiseOtherBox{flex-direction:column;gap:8px;margin-top:8px}
+#expertiseOtherBox input{border-color:var(--orange);background:#fff8f4}
+
+/* Pills */
+.pill-grid{display:flex;flex-wrap:wrap;gap:8px}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 15px;
+  border:1.5px solid var(--border);border-radius:30px;background:var(--input-bg);
+  font-size:13px;cursor:pointer;transition:all .15s;user-select:none;
+}
+.pill:hover{border-color:var(--orange);background:#fdf6f1;transform:translateY(-1px)}
+.pill:active{transform:translateY(0)}
+.pill input[type=radio],.pill input[type=checkbox]{accent-color:var(--orange);width:13px;height:13px;flex-shrink:0}
+.pill.selected{border-color:var(--orange);background:var(--orange-muted);color:var(--orange);font-weight:600}
+
+/* Upload */
+.upload-box{border:2px dashed var(--border);border-radius:12px;padding:26px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--input-bg)}
+.upload-box:hover{border-color:var(--orange);background:#fdf6f1}
+.upload-box .upload-icon{font-size:30px;margin-bottom:8px}
+.upload-box p{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px}
+.upload-box span{font-size:12px;color:var(--muted)}
+.upload-box input[type=file]{display:none}
+.upload-done{border-color:var(--orange);background:#fff8f4}
+
+/* Rating */
+.rating-group{display:flex;gap:6px}
+.rating-btn{flex:1;padding:10px 4px;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--input-bg);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s}
+.rating-btn:hover{border-color:var(--orange);color:var(--orange);transform:translateY(-1px)}
+.rating-btn.active{background:var(--orange);border-color:var(--orange);color:#fff;transform:translateY(-1px)}
+.rating-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+
+/* Actions */
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:32px;padding-top:24px;border-top:1px solid var(--border)}
+.btn-back{background:transparent;border:1.5px solid var(--border);color:var(--muted);border-radius:var(--radius);padding:11px 22px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all .18s}
+.btn-back:hover{border-color:var(--orange);color:var(--orange)}
+.btn-next{background:var(--orange);color:#fff;border:none;border-radius:var(--radius);padding:12px 28px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .18s;box-shadow:0 2px 8px rgba(212,98,26,.25)}
+.btn-next:hover{background:var(--orange-light);box-shadow:0 4px 14px rgba(212,98,26,.35);transform:translateY(-1px)}
+.btn-next:active{transform:translateY(0);box-shadow:0 2px 6px rgba(212,98,26,.2)}
+.btn-next:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-next.loading{opacity:.75;cursor:not-allowed;pointer-events:none}
+
+/* Step dots */
+.step-dots{display:flex;gap:7px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--orange-muted);transition:all .35s cubic-bezier(.4,0,.2,1)}
+.dot.done{background:rgba(212,98,26,.4)}
+.dot.active{background:var(--orange);width:24px;border-radius:4px}
+
+/* Step transitions */
+.step{display:none;animation:stepIn .3s ease}
+.step.active{display:block}
+@keyframes stepIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* Success */
+.success{text-align:center;padding:56px 20px;animation:stepIn .4s ease}
+.success-icon{width:76px;height:76px;background:linear-gradient(135deg,var(--orange-muted),#ffe0c8);border-radius:50%;margin:0 auto 22px;display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 4px 20px rgba(212,98,26,.2)}
+.success h2{font-family:'Playfair Display',serif;font-size:26px;margin-bottom:10px;color:var(--text)}
+.success p{color:var(--muted);font-size:15px;line-height:1.65}
+
+/* Terms */
+.terms-box{background:var(--input-bg);border:1.5px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:border-color .18s}
+.terms-box:hover{border-color:var(--orange)}
+.terms-box input[type=checkbox]{accent-color:var(--orange);width:16px;height:16px;flex-shrink:0;margin-top:3px;cursor:pointer}
+.terms-box p{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Add button micro-style */
+.add-btn{padding:10px 18px;background:var(--orange);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;white-space:nowrap;transition:all .15s;box-shadow:0 1px 4px rgba(212,98,26,.2)}
+.add-btn:hover{background:var(--orange-light);transform:translateY(-1px)}
+.add-btn:active{transform:translateY(0)}
+
+/* Char counter */
+.char-count{font-size:11px;color:var(--muted);text-align:right;transition:color .2s}
+.char-count.warn{color:#e67e22}
+.char-count.over{color:var(--error)}
+
+@media(max-width:580px){
+  body{padding:20px 12px 60px}
+  .card{padding:24px 18px;border-radius:14px}
+  .form-grid{grid-template-columns:1fr}
+  .form-grid .full{grid-column:1}
+  .rating-btn{padding:8px 2px;font-size:12px}
+  .card-title{font-size:24px}
+  .btn-next,.btn-back{padding:11px 18px;font-size:13px}
+}
+</style>
+<script>
+// Defined early so inline onchange/onkeydown attributes can call these before body scripts load
+function allowPhoneKeys(e) {
+  // Allow: backspace, delete, tab, escape, enter, arrows, home, end
+  if ([8,9,13,27,46,35,36,37,38,39,40].indexOf(e.keyCode) !== -1) return true;
+  // Allow: + only at start (position 0)
+  if (e.key === '+') {
+    var inp = e.target;
+    if (inp.selectionStart === 0 && inp.value.indexOf('+') === -1) return true;
+    e.preventDefault(); return false;
+  }
+  // Allow: spaces and hyphens for formatting
+  if (e.key === ' ' || e.key === '-') return true;
+  // Allow: numbers 0-9
+  if ((e.keyCode >= 48 && e.keyCode <= 57) || (e.keyCode >= 96 && e.keyCode <= 105)) return true;
+  // Block everything else
+  e.preventDefault(); return false;
+}
+
+function validatePhone(inp) {
+  // Remove everything except +, digits, spaces, hyphens
+  var val = inp.value.replace(/[^\d\+\s\-]/g, '');
+  inp.value = val;
+  // Count digits only
+  var digits = val.replace(/\D/g,'');
+  var wrap = inp.closest('.field');
+  var err = wrap && wrap.querySelector('.phone-err');
+  if (digits.length > 0 && (digits.length < 7 || digits.length > 15)) {
+    inp.style.borderColor = '#e03030';
+    if (!err) {
+      var e = document.createElement('span');
+      e.className = 'err-msg phone-err';
+      e.textContent = 'Enter a valid phone number (7–15 digits with country code).';
+      wrap.appendChild(e);
+    }
+  } else {
+    inp.style.borderColor = digits.length >= 7 ? 'var(--orange)' : '';
+    if (err) err.remove();
+  }
+}
+function showOther(select, boxId, triggerVal) {
+  var box = document.getElementById(boxId);
+  if (!box) return;
+  if (select.value === triggerVal) {
+    box.style.display = 'flex';
+    box.style.flexDirection = 'column';
+  } else {
+    box.style.display = 'none';
+    var inp = box.querySelector('input');
+    if (inp) inp.value = '';
+  }
+}
+function fileSelected(input, labelId) {
+  var label = document.getElementById(labelId);
+  var box = input.closest('.upload-box');
+  var field = box ? box.closest('.field') : null;
+  if (input.files && input.files.length > 0) {
+    var name = input.files.length > 1 ? input.files.length + ' files selected' : input.files[0].name;
+    label.textContent = '✓ ' + name;
+    if (box) { box.classList.add('upload-done'); box.style.borderStyle = 'solid'; box.style.borderColor = ''; box.style.background = ''; }
+    if (field) { var e = field.querySelector('.err-msg'); if(e) e.remove(); }
+  }
+}
+var selectedExpertise = [];
+function addExpertise(select) {
+  var val = select.value;
+  if (!val) return;
+  if (val === 'Other') {
+    document.getElementById('expertiseSelectWrap').style.display = 'none';
+    document.getElementById('expertiseOtherBox').style.display = 'block';
+    document.getElementById('expertiseOther').focus();
+    select.value = '';
+    return;
+  }
+  if (selectedExpertise.indexOf(val) === -1) {
+    selectedExpertise.push(val);
+    renderTags();
+    updateExpertiseHidden();
+  }
+  select.value = '';
+}
+function addExpertiseOther() {
+  var val = document.getElementById('expertiseOther').value.trim();
+  if (!val) return;
+  if (selectedExpertise.indexOf(val) === -1) {
+    selectedExpertise.push(val);
+    renderTags();
+    updateExpertiseHidden();
+  }
+  document.getElementById('expertiseOther').value = '';
+  document.getElementById('expertiseOtherBox').style.display = 'none';
+  document.getElementById('expertiseSelectWrap').style.display = 'block';
+}
+function removeExpertise(val) {
+  selectedExpertise = selectedExpertise.filter(function(v){return v!==val;}); renderTags(); updateExpertiseHidden();
+}
+function renderTags() {
+  var c = document.getElementById('expertiseTags'); c.innerHTML = '';
+  selectedExpertise.forEach(function(val) {
+    var tag = document.createElement('span');
+    tag.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:var(--orange-muted);border:1.5px solid var(--orange);color:var(--orange);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:500;';
+    tag.innerHTML = val + ' <button type="button" onclick="removeExpertise(\'' + val.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')" style="background:none;border:none;cursor:pointer;color:var(--orange);font-size:15px;line-height:1;padding:0;">&#10005;</button>';
+    c.appendChild(tag);
+  });
+  var wrap = c.closest('.field'); var e = wrap && wrap.querySelector('.err-msg'); if (e) e.remove();
+}
+function updateExpertiseHidden() { document.getElementById('areasOfExpertiseHidden').value = selectedExpertise.join(', '); }
+var notableCompanies = [];
+function addNotableCompany() {
+  var inp = document.getElementById('notableCompanyInput');
+  var val = inp.value.trim(); if (!val) return;
+  if (notableCompanies.indexOf(val) === -1) { notableCompanies.push(val); renderCompanyTags(); updateCompaniesHidden(); }
+  inp.value = '';
+}
+function removeNotableCompany(val) {
+  notableCompanies = notableCompanies.filter(function(v){return v!==val;}); renderCompanyTags(); updateCompaniesHidden();
+}
+function renderCompanyTags() {
+  var c = document.getElementById('notableCompanyTags'); c.innerHTML = '';
+  notableCompanies.forEach(function(val) {
+    var tag = document.createElement('span');
+    tag.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:var(--orange-muted);border:1.5px solid var(--orange);color:var(--orange);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:500;';
+    tag.innerHTML = val + ' <button type="button" onclick="removeNotableCompany(\'' + val.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')" style="background:none;border:none;cursor:pointer;color:var(--orange);font-size:15px;line-height:1;padding:0;">&#10005;</button>';
+    c.appendChild(tag);
+  });
+}
+function updateCompaniesHidden() { document.getElementById('notableCompaniesHidden').value = notableCompanies.join(', '); }
+var pastClients = [];
+function addPastClient() {
+  var inp = document.getElementById('pastClientInput');
+  var val = inp.value.trim(); if (!val) return;
+  if (pastClients.indexOf(val) === -1) { pastClients.push(val); renderPastClientTags(); updatePastClientsHidden(); }
+  inp.value = '';
+}
+function removePastClient(val) {
+  pastClients = pastClients.filter(function(v){return v!==val;}); renderPastClientTags(); updatePastClientsHidden();
+}
+function renderPastClientTags() {
+  var c = document.getElementById('pastClientTags'); c.innerHTML = '';
+  pastClients.forEach(function(val) {
+    var tag = document.createElement('span');
+    tag.style.cssText = 'display:inline-flex;align-items:center;gap:6px;background:var(--orange-muted);border:1.5px solid var(--orange);color:var(--orange);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:500;';
+    tag.innerHTML = val + ' <button type="button" onclick="removePastClient(\'' + val.replace(/\\/g,'\\\\').replace(/'/g,"\\'") + '\')" style="background:none;border:none;cursor:pointer;color:var(--orange);font-size:15px;line-height:1;padding:0;">&#10005;</button>';
+    c.appendChild(tag);
+  });
+}
+function updatePastClientsHidden() { document.getElementById('pastClientsHidden').value = pastClients.join(', '); }
+function selectRating(fieldId, groupId, val) {
+  document.getElementById(fieldId).value = val;
+  var btns = document.getElementById(groupId).querySelectorAll('.rating-btn');
+  btns.forEach(function(b){b.classList.remove('active');}); btns[val-1].classList.add('active');
+  var wrap = document.getElementById(groupId).closest('.field');
+  var e = wrap && wrap.querySelector('.err-msg'); if (e) e.remove();
+  document.getElementById(groupId).style.outline = '';
+}
+</script>
 </head>
-
 <body>
-  <div class="wrapper">
-    <div class="logo">
-      <img style="mix-blend-mode:multiply;background:transparent;" src="data:image/png;base64,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" alt="SWYN" style="height:48px;width:auto;"/>
-    </div>
-    <div class="progress-wrap">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
-      <div class="progress-label" id="progressLabel">Step 1 of 5</div>
-    </div>
-    <div class="card">
-
-      <!-- ═══ STEP 1: Personal Details ═══ -->
-      <div class="step active" id="step1">
-        <div class="step-label">Step 01 of 05</div>
-        <h1 class="card-title">Personal Details</h1>
-        <p class="card-subtitle">Tell us who you are. This information helps us create your verified expert profile.</p>
-        <hr class="divider"/>
-        <div class="form-grid">
-          <div class="field">
-            <label>First name <span class="req">*</span></label>
-            <input type="text" id="firstName" placeholder="Rajesh"/>
-          </div>
-          <div class="field">
-            <label>Last name <span class="req">*</span></label>
-            <input type="text" id="lastName" placeholder="Sharma"/>
-          </div>
-          <div class="field">
-            <label>Personal email <span class="req">*</span></label>
-            <input type="email" id="primaryEmail" placeholder="e.g. yourname@gmail.com"/>
-          </div>
-          <div class="field">
-            <label>Mobile number (with country code) <span class="req">*</span></label>
-            <input type="tel" id="phoneNumber" placeholder="+91 98765 43210" maxlength="17" onkeydown="return allowPhoneKeys(event)" oninput="validatePhone(this)"/>
-            <span class="hint">Include country code, e.g. +91 for India. Numbers only.</span>
-          </div>
-          <div class="field">
-            <label>City <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="city" onchange="showOther(this,'cityOtherBox','Other')">
-                <option value="">Select city</option>
-                <option>Mumbai</option><option>Delhi</option><option>Bengaluru</option>
-                <option>Chennai</option><option>Hyderabad</option><option>Pune</option>
-                <option>Kolkata</option><option>Ahmedabad</option><option>Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="other-box field full" id="cityOtherBox">
-            <label>Please specify your city <span class="req">*</span></label>
-            <input type="text" id="cityOther" placeholder="e.g. Coimbatore, Surat, Jaipur…"/>
-          </div>
-          <div class="field full">
-            <label>Current professional headline <span class="req">*</span></label>
-            <input type="text" id="headline" placeholder="e.g. Fractional CFO | Ex-Goldman Sachs | 22 years in Finance"/>
-            <span class="hint">This appears on your SWYN profile card. Keep it crisp and credibility-forward.</span>
-          </div>
-          <div class="field">
-            <label>Gender</label>
-            <div class="select-wrap">
-              <select id="gender">
-                <option value="">Select</option>
-                <option>Male</option><option>Female</option><option>Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label>How did you hear about SWYN?</label>
-            <div class="select-wrap">
-              <select id="heardAbout" onchange="showOther(this,'heardAboutOtherBox','Other')">
-                <option value="">Select</option>
-                <option>LinkedIn</option><option>Referral from a friend</option>
-                <option>Google Search</option><option>Event / Conference</option>
-                <option>Newsletter</option><option>SWYN Team</option><option>Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="other-box field full" id="heardAboutOtherBox">
-            <label>Please specify</label>
-            <input type="text" id="heardAboutOther" placeholder="e.g. Twitter, Friend's recommendation…"/>
-          </div>
-        </div>
-        <div class="actions">
-          <div class="step-dots">
-            <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
-          </div>
-          <button type="button" class="btn-next" id="next1">Continue &#8594;</button>
-        </div>
-      </div>
-
-      <!-- ═══ STEP 2: Professional Background ═══ -->
-      <div class="step" id="step2">
-        <div class="step-label">Step 02 of 05</div>
-        <h1 class="card-title">Professional Background</h1>
-        <p class="card-subtitle">Help us understand your experience so we can match you with the right opportunities.</p>
-        <hr class="divider"/>
-        <div class="form-grid">
-          <div class="field">
-            <label>Current Job Title / Role <span class="req">*</span></label>
-            <input type="text" id="jobTitle" placeholder="e.g. CFO, Strategy Consultant"/>
-          </div>
-          <div class="field">
-            <label>Current Company / Organization</label>
-            <input type="text" id="currentCompany" placeholder="Company name"/>
-          </div>
-          <div class="field">
-            <label>Total Years of Professional Experience <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="yearsExperience">
-                <option value="">Select</option>
-                <option>5–10 years</option><option>10–15 years</option>
-                <option>15–20 years</option><option>20–25 years</option><option>25+ years</option>
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label>Primary Industry of Expertise <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="primaryIndustry" onchange="showOther(this,'industryOtherBox','Other')">
-                <option value="">Select industry</option>
-                <option>Finance &amp; Banking</option><option>Technology / SaaS</option>
-                <option>Healthcare</option><option>Manufacturing</option>
-                <option>FMCG / Retail</option><option>Consulting</option>
-                <option>Education</option><option>Legal</option>
-                <option>Real Estate</option><option>Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="other-box field full" id="industryOtherBox">
-            <label>If 'Other' Industry, please specify <span class="req">*</span></label>
-            <input type="text" id="industryOther" placeholder="e.g. Agriculture, Media, Logistics…"/>
-          </div>
-          <div class="field full">
-            <label>Please provide a brief biography / professional summary <span class="req">*</span></label>
-            <textarea id="biography" placeholder="Share your career journey, key achievements, and what makes you a great mentor (100–250 words)…" oninput="updateCharCount(this,'biographyCount',100,250)"></textarea>
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <span class="hint">100–250 words recommended.</span>
-              <span class="char-count" id="biographyCount">0 words</span>
-            </div>
-          </div>
-
-          <!-- EXPERTISE section -->
-          <div class="full" style="margin-top:8px;">
-            <div class="section-head">Expertise</div>
-          </div>
-
-          <div class="field full">
-            <label>Key sectors / industries <span class="req">*</span></label>
-            <div class="pill-grid" id="sectorGrid">
-              <label class="pill"><input type="checkbox" value="BFSI"/> BFSI</label>
-              <label class="pill"><input type="checkbox" value="Technology / SaaS"/> Technology / SaaS</label>
-              <label class="pill"><input type="checkbox" value="Manufacturing"/> Manufacturing</label>
-              <label class="pill"><input type="checkbox" value="Retail / D2C"/> Retail / D2C</label>
-              <label class="pill"><input type="checkbox" value="Healthcare"/> Healthcare</label>
-              <label class="pill"><input type="checkbox" value="EdTech"/> EdTech</label>
-              <label class="pill"><input type="checkbox" value="Fintech"/> Fintech</label>
-              <label class="pill"><input type="checkbox" value="Real Estate"/> Real Estate</label>
-              <label class="pill"><input type="checkbox" value="FMCG"/> FMCG</label>
-              <label class="pill"><input type="checkbox" value="GCC / Captives"/> GCC / Captives</label>
-              <label class="pill"><input type="checkbox" value="Startups"/> Startups</label>
-              <label class="pill"><input type="checkbox" value="PSU / Government"/> PSU / Government</label>
-            </div>
-          </div>
-
-          <div class="field full">
-            <label>Type of companies you have worked with</label>
-            <div class="pill-grid" id="companyTypeGrid">
-              <label class="pill"><input type="checkbox" value="Listed corporates"/> Listed corporates</label>
-              <label class="pill"><input type="checkbox" value="Private equity backed"/> Private equity backed</label>
-              <label class="pill"><input type="checkbox" value="VC funded startups"/> VC funded startups</label>
-              <label class="pill"><input type="checkbox" value="Family businesses"/> Family businesses</label>
-              <label class="pill"><input type="checkbox" value="MSMEs / SMEs"/> MSMEs / SMEs</label>
-              <label class="pill"><input type="checkbox" value="MNCs / GCCs"/> MNCs / GCCs</label>
-              <label class="pill"><input type="checkbox" value="NGO / Social sector"/> NGO / Social sector</label>
-            </div>
-          </div>
-
-          <!-- NOTABLE COMPANIES section -->
-          <div class="full" style="margin-top:8px;">
-            <div class="section-head">Notable Companies</div>
-          </div>
-
-          <div class="field full">
-            <label>Notable companies / organisations you have worked for</label>
-            <span class="hint" style="margin-bottom:8px;display:block;">Type a company name and press <strong>Add</strong> or hit Enter. These will be highlighted on your SWYN profile.</span>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <input type="text" id="notableCompanyInput" placeholder="e.g. Goldman Sachs, Infosys, McKinsey…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addNotableCompany();}"/>
-              <button type="button" onclick="addNotableCompany()" class="add-btn">+ Add</button>
-            </div>
-            <div id="notableCompanyTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
-            <input type="hidden" id="notableCompaniesHidden"/>
-          </div>
-
-          <!-- TYPES OF ENGAGEMENT section -->
-          <div class="full" style="margin-top:8px;">
-            <div class="section-head">Engagements</div>
-          </div>
-
-          <div class="field full">
-            <label>Types of engagements you're open to <span class="req">*</span></label>
-            <div class="pill-grid" id="engagementTypeGrid">
-              <label class="pill"><input type="checkbox" value="Fractional role"/> Fractional role</label>
-              <label class="pill"><input type="checkbox" value="Advisory / Mentoring"/> Advisory / Mentoring</label>
-              <label class="pill"><input type="checkbox" value="Project consulting"/> Project consulting</label>
-              <label class="pill"><input type="checkbox" value="Board seat"/> Board seat</label>
-              <label class="pill"><input type="checkbox" value="Workshops / Training"/> Workshops / Training</label>
-              <label class="pill"><input type="checkbox" value="Retaining"/> Retaining</label>
-            </div>
-            <input type="hidden" id="engagementTypes"/>
-          </div>
-
-          <!-- PAST CLIENTS section -->
-          <div class="full" style="margin-top:8px;">
-            <div class="section-head">Past Clients &amp; Advisory Work</div>
-          </div>
-
-          <div class="field full">
-            <label>Past clients or companies you've advised (as a consultant / advisor)</label>
-            <span class="hint" style="margin-bottom:8px;display:block;">Type a company or client name and press <strong>Add</strong> or hit Enter. You may anonymise if needed (e.g. "Series B Fintech, Mumbai").</span>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <input type="text" id="pastClientInput" placeholder="e.g. Razorpay, Nykaa, Mid-size FMCG brand…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addPastClient();}"/>
-              <button type="button" onclick="addPastClient()" class="add-btn">+ Add</button>
-            </div>
-            <div id="pastClientTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
-            <input type="hidden" id="pastClientsHidden"/>
-          </div>
-
-          <div class="field full">
-            <label>Specific Areas of Expertise for Mentorship <span class="req">*</span></label>
-            <div id="expertiseSelectWrap" class="select-wrap">
-              <select id="areasOfExpertise" onchange="addExpertise(this)">
-                <option value="">Select an area…</option>
-                <option>Fundraising &amp; Investor Relations</option>
-                <option>Go-to-Market Strategy</option>
-                <option>Financial Modelling &amp; CFO Advisory</option>
-                <option>Sales &amp; Revenue Growth</option>
-                <option>Marketing &amp; Branding</option>
-                <option>Product Development &amp; Tech</option>
-                <option>HR &amp; Team Building</option>
-                <option>Legal &amp; Compliance</option>
-                <option>Operations &amp; Supply Chain</option>
-                <option>Leadership &amp; Executive Coaching</option>
-                <option>Strategic Partnerships</option>
-                <option>International Expansion</option>
-                <option>Digital Transformation</option>
-                <option>Customer Success &amp; Retention</option>
-                <option>ESG &amp; Sustainability</option>
-                <option>Other</option>
-              </select>
-            </div>
-            <div id="expertiseTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
-            <div id="expertiseOtherBox" style="display:none;position:relative;">
-              <input type="text" id="expertiseOther" placeholder="Type your expertise area…" style="width:100%;padding-right:70px;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addExpertiseOther();}"  />
-              <button type="button" onclick="addExpertiseOther()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:6px 14px;background:var(--orange);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Add</button>
-            </div>
-            <input type="hidden" id="areasOfExpertiseHidden"/>
-            <span class="hint">Select multiple. Click ✕ on a tag to remove.</span>
-          </div>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn-back" id="back2">&#8592; Back</button>
-          <button type="button" class="btn-next" id="next2">Continue &#8594;</button>
-        </div>
-      </div>
-
-      <!-- ═══ STEP 3: Availability & Engagement ═══ -->
-      <div class="step" id="step3">
-        <div class="step-label">Step 03 of 05</div>
-        <h1 class="card-title">Availability &amp; Engagement</h1>
-        <p class="card-subtitle">Let us know how and when you prefer to work with founders.</p>
-        <hr class="divider"/>
-        <div class="form-grid">
-
-          <div class="full"><div class="section-head" style="margin-top:0;margin-bottom:4px;">Rate Card</div></div>
-
-          <div class="field">
-            <label>International clients — rate (USD) <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="hourlyRate" onchange="showOther(this,'rateNegotiableBox','Negotiable')">
-                <option value="">Select</option>
-                <option>$50–$100/hr</option><option>$100–$200/hr</option>
-                <option>$200–$300/hr</option><option>$300–$500/hr</option>
-                <option>$500+/hr</option><option>Negotiable</option>
-                <option>Pro bono / Equity only</option>
-              </select>
-            </div>
-          </div>
-          <div class="other-box field" id="rateNegotiableBox">
-            <label>If 'Negotiable' (USD), please specify</label>
-            <input type="text" id="rateNegotiable" placeholder="e.g. Depends on stage, equity arrangements…"/>
-          </div>
-
-          <div class="field">
-            <label>Indian clients — rate (INR) <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="hourlyRateINR" onchange="showOther(this,'rateNegotiableINRBox','Negotiable')">
-                <option value="">Select</option>
-                <option>₹500–₹2,000/hr</option><option>₹2,000–₹5,000/hr</option><option>₹5,000–₹10,000/hr</option>
-                <option>₹10,000–₹20,000/hr</option><option>₹20,000–₹40,000/hr</option>
-                <option>₹40,000+/hr</option><option>Negotiable</option>
-                <option>Pro bono / Equity only</option>
-              </select>
-            </div>
-          </div>
-          <div class="other-box field" id="rateNegotiableINRBox">
-            <label>If 'Negotiable' (INR), please specify</label>
-            <input type="text" id="rateNegotiableINR" placeholder="e.g. Depends on stage, equity arrangements…"/>
-          </div>
-
-          <div class="field">
-            <label>Hours per month for mentoring startup founders <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="hoursPerMonth">
-                <option value="">Select</option>
-                <option>1–5 hours/month</option><option>5–10 hours/month</option>
-                <option>10–20 hours/month</option><option>20+ hours/month</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Number of simultaneous engagements you can handle</label>
-            <div class="pill-grid" id="simultaneousGrid">
-              <label class="pill selected"><input type="radio" name="simultaneous" value="1" checked/> 1</label>
-              <label class="pill"><input type="radio" name="simultaneous" value="2"/> 2</label>
-              <label class="pill"><input type="radio" name="simultaneous" value="3"/> 3</label>
-              <label class="pill"><input type="radio" name="simultaneous" value="4+"/> 4+</label>
-            </div>
-            <input type="hidden" id="simultaneousEngagements" value="1"/>
-          </div>
-
-          <div class="field">
-            <label>Work mode preference</label>
-            <div class="pill-grid" id="workModeGrid">
-              <label class="pill"><input type="checkbox" value="Remote only"/> Remote only</label>
-              <label class="pill"><input type="checkbox" value="Hybrid"/> Hybrid</label>
-              <label class="pill"><input type="checkbox" value="On-site if needed"/> On-site if needed</label>
-            </div>
-            <input type="hidden" id="workMode"/>
-          </div>
-
-          <div class="field">
-            <label>Willing to travel?</label>
-            <div class="pill-grid" id="travelGrid">
-              <label class="pill"><input type="checkbox" value="No"/> No</label>
-              <label class="pill"><input type="checkbox" value="Within city"/> Within city</label>
-              <label class="pill"><input type="checkbox" value="Pan-India"/> Pan-India</label>
-              <label class="pill"><input type="checkbox" value="International"/> International</label>
-            </div>
-            <input type="hidden" id="willingToTravel"/>
-          </div>
-
-          <div class="field full">
-            <label>Client types you are most comfortable with</label>
-            <div class="pill-grid" id="clientTypeGrid">
-              <label class="pill"><input type="checkbox" value="Funded startups"/> Funded startups</label>
-              <label class="pill"><input type="checkbox" value="GCCs"/> GCCs</label>
-              <label class="pill"><input type="checkbox" value="MSMEs"/> MSMEs</label>
-              <label class="pill"><input type="checkbox" value="Family offices"/> Family offices</label>
-              <label class="pill"><input type="checkbox" value="Large corporates"/> Large corporates</label>
-              <label class="pill"><input type="checkbox" value="PE / VC backed"/> PE / VC backed</label>
-              <label class="pill"><input type="checkbox" value="No preference"/> No preference</label>
-            </div>
-          </div>
-
-          <div class="field full">
-            <label>What kind of mandates excite you most?</label>
-            <div class="pill-grid" id="mandateGrid">
-              <label class="pill"><input type="checkbox" value="Pre-IPO / fundraise readiness"/> Pre-IPO / fundraise readiness</label>
-              <label class="pill"><input type="checkbox" value="Turnaround / restructuring"/> Turnaround / restructuring</label>
-              <label class="pill"><input type="checkbox" value="Building the finance / marketing function from scratch"/> Building the finance / marketing function from scratch</label>
-              <label class="pill"><input type="checkbox" value="GTM strategy"/> GTM strategy</label>
-              <label class="pill"><input type="checkbox" value="Interim leadership cover"/> Interim leadership cover</label>
-              <label class="pill"><input type="checkbox" value="Board / advisory seat"/> Board / advisory seat</label>
-              <label class="pill"><input type="checkbox" value="M&A / integration"/> M&amp;A / integration</label>
-              <label class="pill"><input type="checkbox" value="Process & systems overhaul"/> Process &amp; systems overhaul</label>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Do you require an NDA or formal agreement? <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="requireNDA">
-                <option value="">Select</option>
-                <option>Yes, always</option>
-                <option>Depends on the engagement</option>
-                <option>No, not necessary</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Experience level in mentoring early-stage startups <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="mentoringExperience">
-                <option value="">Select</option>
-                <option>No experience yet</option><option>1–2 startups</option>
-                <option>3–5 startups</option><option>5–10 startups</option><option>10+ startups</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Previously served as a formal mentor / advisor / board member? <span class="req">*</span></label>
-            <div class="select-wrap">
-              <select id="formalMentor">
-                <option value="">Select</option>
-                <option>Yes</option><option>No</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field full">
-            <label>Equipped to mentor stage of startup development <span class="req">*</span></label>
-            <div class="pill-grid" id="startupStageGrid">
-              <label class="pill"><input type="checkbox" value="Idea / Pre-product"/> Idea / Pre-product</label>
-              <label class="pill"><input type="checkbox" value="MVP / Early traction"/> MVP / Early traction</label>
-              <label class="pill"><input type="checkbox" value="Product-market fit"/> Product-market fit</label>
-              <label class="pill"><input type="checkbox" value="Growth / Scaling"/> Growth / Scaling</label>
-              <label class="pill"><input type="checkbox" value="Series A and beyond"/> Series A and beyond</label>
-              <label class="pill"><input type="checkbox" value="Any stage"/> Any stage</label>
-            </div>
-          </div>
-
-        </div>
-        <div class="actions">
-          <button type="button" class="btn-back" id="back3">&#8592; Back</button>
-          <button type="button" class="btn-next" id="next3">Continue &#8594;</button>
-        </div>
-      </div>
-
-      <!-- ═══ STEP 4: Online Presence & Files ═══ -->
-      <div class="step" id="step4">
-        <div class="step-label">Step 04 of 05</div>
-        <h1 class="card-title">Online Presence</h1>
-        <p class="card-subtitle">Share your professional links and upload your documents.</p>
-        <hr class="divider"/>
-        <div class="form-grid">
-
-          <div class="field full">
-            <label>Upload your CV / Resume <span class="req">*</span></label>
-            <div class="drop-zone" id="cvZone">
-              <input type="file" id="cvFile" accept=".pdf,.doc,.docx" onchange="handleDropFiles(this,'cvZone','cvFileList','cvDriveUrl')"/>
-              <div class="drop-zone-inner">
-                <div class="drop-icon-wrap">📄</div>
-                <p class="drop-zone-title">Drag &amp; drop your CV here</p>
-                <p class="drop-zone-sub">or <strong>click to browse</strong> from your device<br/>PDF or Word · Max 10 MB</p>
-              </div>
-              <div class="drop-progress" id="cvProgress"><div class="drop-progress-fill" id="cvProgressFill"></div></div>
-            </div>
-            <ul class="file-list" id="cvFileList"></ul>
-            <input type="hidden" id="cvDriveUrl"/>
-          </div>
-
-          <div class="field full">
-            <label>Upload a professional photo <span style="color:var(--muted);font-weight:400;">(optional but recommended)</span></label>
-            <div class="drop-zone" id="photoZone">
-              <input type="file" id="photoFile" accept="image/jpeg,image/png,image/webp" onchange="handleDropFiles(this,'photoZone','photoFileList','photoDriveUrl')"/>
-              <div class="drop-zone-inner">
-                <div class="drop-icon-wrap">🖼️</div>
-                <p class="drop-zone-title">Drag &amp; drop your photo here</p>
-                <p class="drop-zone-sub">or <strong>click to browse</strong> from your device<br/>JPG or PNG · Max 5 MB</p>
-              </div>
-              <div class="drop-progress" id="photoProgress"><div class="drop-progress-fill" id="photoProgressFill"></div></div>
-            </div>
-            <ul class="file-list" id="photoFileList"></ul>
-            <input type="hidden" id="photoDriveUrl"/>
-          </div>
-
-          <div class="full"><div class="section-head">Online Presence</div></div>
-
-          <div class="field full">
-            <label>LinkedIn profile URL <span class="req">*</span></label>
-            <input type="url" id="linkedinProfile" placeholder="https://linkedin.com/in/yourname"/>
-          </div>
-
-          <div class="field">
-            <label>Personal website / portfolio</label>
-            <input type="url" id="websiteUrl" placeholder="https://yourwebsite.com"/>
-          </div>
-
-          <div class="field">
-            <label>Any published articles or media mentions</label>
-            <input type="url" id="articleUrl" placeholder="https://economictimes.com/…"/>
-          </div>
-
-          <div class="field full">
-            <label>Upload work samples <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
-            <div class="drop-zone" id="samplesZone">
-              <input type="file" id="samplesFile" accept=".pdf,.ppt,.pptx,.xls,.xlsx,.doc,.docx" multiple onchange="handleDropFiles(this,'samplesZone','samplesFileList','workSamplesDriveUrl')"/>
-              <div class="drop-zone-inner">
-                <div class="drop-icon-wrap">📁</div>
-                <p class="drop-zone-title">Drag &amp; drop work samples here</p>
-                <p class="drop-zone-sub">or <strong>click to browse</strong> · Multiple files allowed<br/>PDF, PPT, Excel, Word · Max 20 MB total</p>
-              </div>
-              <div class="drop-progress" id="samplesProgress"><div class="drop-progress-fill" id="samplesProgressFill"></div></div>
-            </div>
-            <ul class="file-list" id="samplesFileList"></ul>
-            <input type="hidden" id="workSamplesDriveUrl"/>
-            <span class="hint" style="margin-top:4px;">Anonymised deliverables, models, frameworks are welcome.</span>
-          </div>
-
-        </div>
-        <div class="actions">
-          <button type="button" class="btn-back" id="back4">&#8592; Back</button>
-          <button type="button" class="btn-next" id="next4">Continue &#8594;</button>
-        </div>
-      </div>
-
-      <!-- ═══ STEP 5: Final ═══ -->
-      <div class="step" id="step5">
-        <div class="step-label">Step 05 of 05</div>
-        <h1 class="card-title">Final Details</h1>
-        <p class="card-subtitle">Almost done! Tell us about your top achievements before we review your profile.</p>
-        <hr class="divider"/>
-        <div class="form-grid">
-
-          <div class="field full">
-            <label>Top Achievements <span class="req">*</span></label>
-            <textarea id="topAchievements" style="min-height:140px;" placeholder="e.g. Led a ₹500Cr debt restructuring at XYZ Bank reducing NPAs by 40%, Scaled a SaaS startup from $0 to $5M ARR in 18 months, Built and exited a fintech company acquired by HDFC…" oninput="updateCharCount(this,'achieveCount',0,0)"></textarea>
-            <div style="display:flex;justify-content:space-between;align-items:center">
-              <span class="hint">Share your 2–3 most impactful achievements with numbers and outcomes.</span>
-              <span class="char-count" id="achieveCount">0 words</span>
-            </div>
-          </div>
-
-          <div class="field full">
-            <label>Anything else you'd like SWYN to know?</label>
-            <textarea id="additionalInfo" placeholder="Non-compete clauses, geographic restrictions, causes you care about, sectors you won't work in, etc."></textarea>
-          </div>
-
-        </div>
-
-        <!-- Website listing consent -->
-        <div style="margin-top:28px;">
-          <div class="section-head" style="margin-top:0;margin-bottom:20px;">Profile Listing</div>
-          <div class="field full">
-            <label>May we feature your profile on the <a href="https://swyn.in" target="_blank" style="color:var(--orange);text-decoration:none;">swyn.in</a> website? <span class="req">*</span></label>
-            <span class="hint" style="margin-bottom:10px;display:block;">Your profile will be visible to startup founders and companies looking for expert mentors on our platform.</span>
-            <div class="pill-grid" id="websiteListingGrid">
-              <label class="pill"><input type="radio" name="websiteListing" value="Yes, list my full profile"/> Yes, list my full profile</label>
-              <label class="pill"><input type="radio" name="websiteListing" value="Yes, but only my name and headline"/> Yes, name &amp; headline only</label>
-              <label class="pill"><input type="radio" name="websiteListing" value="No, keep my profile private"/> No, keep it private</label>
-            </div>
-            <input type="hidden" id="websiteListingConsent"/>
-          </div>
-        </div>
-
-        <!-- Terms -->
-        <div style="margin-top:28px;">
-          <label class="terms-box">
-            <input type="checkbox" id="termsCheck"/>
-            <p>I confirm that the information I have provided is accurate. I consent to SWYN (Merqury Connections Pvt. Ltd.) storing and processing my data for the purpose of expert matching and engagement facilitation, in accordance with DPDPA 2023. I understand that my profile will not be shared with any third party without my explicit approval.</p>
-          </label>
-        </div>
-
-        <div class="actions">
-          <button type="button" class="btn-back" id="back5">&#8592; Back</button>
-          <button type="button" class="btn-next" id="btnSubmit" style="padding:12px 36px;">Submit Application &#8594;</button>
-        </div>
-      </div>
-
-      <!-- SUCCESS -->
-      <div class="step" id="stepSuccess">
-        <div class="success">
-          <div class="success-icon">&#10003;</div>
-          <h2>Application Submitted!</h2>
-          <p>Thank you for applying to join SWYN's expert mentor network.<br/>Our team will review your profile and get in touch within <strong>3–5 business days</strong>.</p>
-          <p style="margin-top:20px;font-size:13px;color:var(--muted);">Questions? Write to us at <a href="mailto:info@swyn.in" style="color:var(--orange);">info@swyn.in</a></p>
-        </div>
-      </div>
-
-    </div>
+<div class="wrapper">
+  <div class="logo">
+    <img style="mix-blend-mode:multiply;background:transparent;" src="data:image/png;base64,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" alt="SWYN" style="height:48px;width:auto;"/>
   </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+    <div class="progress-label" id="progressLabel">Step 1 of 5</div>
+  </div>
+  <div class="card">
+
+    <!-- ═══ STEP 1: Personal Details ═══ -->
+    <div class="step active" id="step1">
+      <div class="step-label">Step 01 of 05</div>
+      <h1 class="card-title">Personal Details</h1>
+      <p class="card-subtitle">Tell us who you are. This information helps us create your verified expert profile.</p>
+      <hr class="divider"/>
+      <div class="form-grid">
+        <div class="field">
+          <label>First name <span class="req">*</span></label>
+          <input type="text" id="firstName" placeholder="Vasudevan"/>
+        </div>
+        <div class="field">
+          <label>Last name <span class="req">*</span></label>
+          <input type="text" id="lastName" placeholder="Krishnan"/>
+        </div>
+        <div class="field">
+          <label>Personal email <span class="req">*</span></label>
+          <input type="email" id="primaryEmail" placeholder="e.g. yourname@gmail.com"/>
+        </div>
+        <div class="field">
+          <label>Mobile number (with country code) <span class="req">*</span></label>
+          <input type="tel" id="phoneNumber" placeholder="+91 98765 43210" maxlength="17" onkeydown="return allowPhoneKeys(event)" oninput="validatePhone(this)"/>
+          <span class="hint">Include country code, e.g. +91 for India. Numbers only.</span>
+        </div>
+        <div class="field">
+          <label>City <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="city" onchange="showOther(this,'cityOtherBox','Other')">
+              <option value="">Select city</option>
+              <option>Mumbai</option><option>Delhi</option><option>Bengaluru</option>
+              <option>Chennai</option><option>Hyderabad</option><option>Pune</option>
+              <option>Kolkata</option><option>Ahmedabad</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="other-box field full" id="cityOtherBox">
+          <label>Please specify your city <span class="req">*</span></label>
+          <input type="text" id="cityOther" placeholder="e.g. Coimbatore, Surat, Jaipur…"/>
+        </div>
+        <div class="field full">
+          <label>Current professional headline <span class="req">*</span></label>
+          <input type="text" id="headline" placeholder="e.g. Fractional CFO | Ex-Goldman Sachs | 22 years in Finance"/>
+          <span class="hint">This appears on your SWYN profile card. Keep it crisp and credibility-forward.</span>
+        </div>
+        <div class="field">
+          <label>Gender</label>
+          <div class="select-wrap">
+            <select id="gender">
+              <option value="">Select</option>
+              <option>Male</option><option>Female</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>How did you hear about SWYN?</label>
+          <div class="select-wrap">
+            <select id="heardAbout" onchange="showOther(this,'heardAboutOtherBox','Other')">
+              <option value="">Select</option>
+              <option>LinkedIn</option><option>Referral from a friend</option>
+              <option>Google Search</option><option>Event / Conference</option>
+              <option>Newsletter</option><option>SWYN Team</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="other-box field full" id="heardAboutOtherBox">
+          <label>Please specify</label>
+          <input type="text" id="heardAboutOther" placeholder="e.g. Twitter, Friend's recommendation…"/>
+        </div>
+      </div>
+      <div class="actions">
+        <div class="step-dots">
+          <div class="dot active"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        </div>
+        <button type="button" class="btn-next" id="next1">Continue &#8594;</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 2: Professional Background ═══ -->
+    <div class="step" id="step2">
+      <div class="step-label">Step 02 of 05</div>
+      <h1 class="card-title">Professional Background</h1>
+      <p class="card-subtitle">Help us understand your experience so we can match you with the right opportunities.</p>
+      <hr class="divider"/>
+      <div class="form-grid">
+        <div class="field">
+          <label>Current Job Title / Role <span class="req">*</span></label>
+          <input type="text" id="jobTitle" placeholder="e.g. CFO, Strategy Consultant"/>
+        </div>
+        <div class="field">
+          <label>Current Company / Organization</label>
+          <input type="text" id="currentCompany" placeholder="Company name"/>
+        </div>
+        <div class="field">
+          <label>Total Years of Professional Experience <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="yearsExperience">
+              <option value="">Select</option>
+              <option>5–10 years</option><option>10–15 years</option>
+              <option>15–20 years</option><option>20–25 years</option><option>25+ years</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Primary Industry of Expertise <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="primaryIndustry" onchange="showOther(this,'industryOtherBox','Other')">
+              <option value="">Select industry</option>
+              <option>Finance &amp; Banking</option><option>Technology / SaaS</option>
+              <option>Healthcare</option><option>Manufacturing</option>
+              <option>FMCG / Retail</option><option>Consulting</option>
+              <option>Education</option><option>Legal</option>
+              <option>Real Estate</option><option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="other-box field full" id="industryOtherBox">
+          <label>If 'Other' Industry, please specify <span class="req">*</span></label>
+          <input type="text" id="industryOther" placeholder="e.g. Agriculture, Media, Logistics…"/>
+        </div>
+        <div class="field full">
+          <label>Please provide a brief biography / professional summary <span class="req">*</span></label>
+          <textarea id="biography" placeholder="Share your career journey, key achievements, and what makes you a great mentor (100–250 words)…" oninput="updateCharCount(this,'biographyCount',100,250)"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="hint">100–250 words recommended.</span>
+            <span class="char-count" id="biographyCount">0 words</span>
+          </div>
+        </div>
+
+        <!-- EXPERTISE section -->
+        <div class="full" style="margin-top:8px;">
+          <div class="section-head">Expertise</div>
+        </div>
+
+        <div class="field full">
+          <label>Key sectors / industries <span class="req">*</span></label>
+          <div class="pill-grid" id="sectorGrid">
+            <label class="pill"><input type="checkbox" value="BFSI"/> BFSI</label>
+            <label class="pill"><input type="checkbox" value="Technology / SaaS"/> Technology / SaaS</label>
+            <label class="pill"><input type="checkbox" value="Manufacturing"/> Manufacturing</label>
+            <label class="pill"><input type="checkbox" value="Retail / D2C"/> Retail / D2C</label>
+            <label class="pill"><input type="checkbox" value="Healthcare"/> Healthcare</label>
+            <label class="pill"><input type="checkbox" value="EdTech"/> EdTech</label>
+            <label class="pill"><input type="checkbox" value="Fintech"/> Fintech</label>
+            <label class="pill"><input type="checkbox" value="Real Estate"/> Real Estate</label>
+            <label class="pill"><input type="checkbox" value="FMCG"/> FMCG</label>
+            <label class="pill"><input type="checkbox" value="GCC / Captives"/> GCC / Captives</label>
+            <label class="pill"><input type="checkbox" value="Startups"/> Startups</label>
+            <label class="pill"><input type="checkbox" value="PSU / Government"/> PSU / Government</label>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Type of companies you have worked with</label>
+          <div class="pill-grid" id="companyTypeGrid">
+            <label class="pill"><input type="checkbox" value="Listed corporates"/> Listed corporates</label>
+            <label class="pill"><input type="checkbox" value="Private equity backed"/> Private equity backed</label>
+            <label class="pill"><input type="checkbox" value="VC funded startups"/> VC funded startups</label>
+            <label class="pill"><input type="checkbox" value="Family businesses"/> Family businesses</label>
+            <label class="pill"><input type="checkbox" value="MSMEs / SMEs"/> MSMEs / SMEs</label>
+            <label class="pill"><input type="checkbox" value="MNCs / GCCs"/> MNCs / GCCs</label>
+            <label class="pill"><input type="checkbox" value="NGO / Social sector"/> NGO / Social sector</label>
+          </div>
+        </div>
+
+        <!-- NOTABLE COMPANIES section -->
+        <div class="full" style="margin-top:8px;">
+          <div class="section-head">Notable Companies</div>
+        </div>
+
+        <div class="field full">
+          <label>Notable companies / organisations you have worked for</label>
+          <span class="hint" style="margin-bottom:8px;display:block;">Type a company name and press <strong>Add</strong> or hit Enter. These will be highlighted on your SWYN profile.</span>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <input type="text" id="notableCompanyInput" placeholder="e.g. Goldman Sachs, Infosys, McKinsey…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addNotableCompany();}"/>
+            <button type="button" onclick="addNotableCompany()" class="add-btn">+ Add</button>
+          </div>
+          <div id="notableCompanyTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
+          <input type="hidden" id="notableCompaniesHidden"/>
+        </div>
+
+        <!-- TYPES OF ENGAGEMENT section -->
+        <div class="full" style="margin-top:8px;">
+          <div class="section-head">Engagements</div>
+        </div>
+
+        <div class="field full">
+          <label>Types of engagements you're open to <span class="req">*</span></label>
+          <div class="pill-grid" id="engagementTypeGrid">
+            <label class="pill"><input type="checkbox" value="Fractional role"/> Fractional role</label>
+            <label class="pill"><input type="checkbox" value="Advisory / Mentoring"/> Advisory / Mentoring</label>
+            <label class="pill"><input type="checkbox" value="Project consulting"/> Project consulting</label>
+            <label class="pill"><input type="checkbox" value="Board seat"/> Board seat</label>
+            <label class="pill"><input type="checkbox" value="Workshops / Training"/> Workshops / Training</label>
+            <label class="pill"><input type="checkbox" value="Retaining"/> Retaining</label>
+          </div>
+          <input type="hidden" id="engagementTypes"/>
+        </div>
+
+        <!-- PAST CLIENTS section -->
+        <div class="full" style="margin-top:8px;">
+          <div class="section-head">Past Clients &amp; Advisory Work</div>
+        </div>
+
+        <div class="field full">
+          <label>Past clients or companies you've advised (as a consultant / advisor)</label>
+          <span class="hint" style="margin-bottom:8px;display:block;">Type a company or client name and press <strong>Add</strong> or hit Enter. You may anonymise if needed (e.g. "Series B Fintech, Mumbai").</span>
+          <div style="display:flex;gap:10px;align-items:flex-start;">
+            <input type="text" id="pastClientInput" placeholder="e.g. Razorpay, Nykaa, Mid-size FMCG brand…" style="flex:1;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addPastClient();}"/>
+            <button type="button" onclick="addPastClient()" class="add-btn">+ Add</button>
+          </div>
+          <div id="pastClientTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;"></div>
+          <input type="hidden" id="pastClientsHidden"/>
+        </div>
+
+        <div class="field full">
+          <label>Specific Areas of Expertise for Mentorship <span class="req">*</span></label>
+          <div id="expertiseSelectWrap" class="select-wrap">
+            <select id="areasOfExpertise" onchange="addExpertise(this)">
+              <option value="">Select an area…</option>
+              <option>Fundraising &amp; Investor Relations</option>
+              <option>Go-to-Market Strategy</option>
+              <option>Financial Modelling &amp; CFO Advisory</option>
+              <option>Sales &amp; Revenue Growth</option>
+              <option>Marketing &amp; Branding</option>
+              <option>Product Development &amp; Tech</option>
+              <option>HR &amp; Team Building</option>
+              <option>Legal &amp; Compliance</option>
+              <option>Operations &amp; Supply Chain</option>
+              <option>Leadership &amp; Executive Coaching</option>
+              <option>Strategic Partnerships</option>
+              <option>International Expansion</option>
+              <option>Digital Transformation</option>
+              <option>Customer Success &amp; Retention</option>
+              <option>ESG &amp; Sustainability</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div id="expertiseTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;"></div>
+          <div id="expertiseOtherBox" style="display:none;position:relative;">
+            <input type="text" id="expertiseOther" placeholder="Type your expertise area…" style="width:100%;padding-right:70px;" onkeydown="if(event.key==='Enter'||event.key==='Go'||event.keyCode===13){event.preventDefault();event.stopPropagation();addExpertiseOther();}"  />
+            <button type="button" onclick="addExpertiseOther()" style="position:absolute;right:4px;top:50%;transform:translateY(-50%);padding:6px 14px;background:var(--orange);color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;">Add</button>
+          </div>
+          <input type="hidden" id="areasOfExpertiseHidden"/>
+          <span class="hint">Select multiple. Click ✕ on a tag to remove.</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-back" id="back2">&#8592; Back</button>
+        <button type="button" class="btn-next" id="next2">Continue &#8594;</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 3: Availability & Engagement ═══ -->
+    <div class="step" id="step3">
+      <div class="step-label">Step 03 of 05</div>
+      <h1 class="card-title">Availability &amp; Engagement</h1>
+      <p class="card-subtitle">Let us know how and when you prefer to work with founders.</p>
+      <hr class="divider"/>
+      <div class="form-grid">
+
+        <div class="full"><div class="section-head" style="margin-top:0;margin-bottom:4px;">Rate Card</div></div>
+
+        <div class="field">
+          <label>International clients — rate (USD) <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="hourlyRate" onchange="showOther(this,'rateNegotiableBox','Negotiable')">
+              <option value="">Select</option>
+              <option>$50–$100/hr</option><option>$100–$200/hr</option>
+              <option>$200–$300/hr</option><option>$300–$500/hr</option>
+              <option>$500+/hr</option><option>Negotiable</option>
+              <option>Pro bono / Equity only</option>
+            </select>
+          </div>
+        </div>
+        <div class="other-box field" id="rateNegotiableBox">
+          <label>If 'Negotiable' (USD), please specify</label>
+          <input type="text" id="rateNegotiable" placeholder="e.g. Depends on stage, equity arrangements…"/>
+        </div>
+
+        <div class="field">
+          <label>Indian clients — rate (INR) <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="hourlyRateINR" onchange="showOther(this,'rateNegotiableINRBox','Negotiable')">
+              <option value="">Select</option>
+              <option>₹500–₹2,000/hr</option><option>₹2,000–₹5,000/hr</option><option>₹5,000–₹10,000/hr</option>
+              <option>₹10,000–₹20,000/hr</option><option>₹20,000–₹40,000/hr</option>
+              <option>₹40,000+/hr</option><option>Negotiable</option>
+              <option>Pro bono / Equity only</option>
+            </select>
+          </div>
+        </div>
+        <div class="other-box field" id="rateNegotiableINRBox">
+          <label>If 'Negotiable' (INR), please specify</label>
+          <input type="text" id="rateNegotiableINR" placeholder="e.g. Depends on stage, equity arrangements…"/>
+        </div>
+
+        <div class="field">
+          <label>Hours per month for mentoring startup founders <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="hoursPerMonth">
+              <option value="">Select</option>
+              <option>1–5 hours/month</option><option>5–10 hours/month</option>
+              <option>10–20 hours/month</option><option>20+ hours/month</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Number of simultaneous engagements you can handle</label>
+          <div class="pill-grid" id="simultaneousGrid">
+            <label class="pill selected"><input type="radio" name="simultaneous" value="1" checked/> 1</label>
+            <label class="pill"><input type="radio" name="simultaneous" value="2"/> 2</label>
+            <label class="pill"><input type="radio" name="simultaneous" value="3"/> 3</label>
+            <label class="pill"><input type="radio" name="simultaneous" value="4+"/> 4+</label>
+          </div>
+          <input type="hidden" id="simultaneousEngagements" value="1"/>
+        </div>
+
+        <div class="field">
+          <label>Work mode preference</label>
+          <div class="pill-grid" id="workModeGrid">
+            <label class="pill"><input type="checkbox" value="Remote only"/> Remote only</label>
+            <label class="pill"><input type="checkbox" value="Hybrid"/> Hybrid</label>
+            <label class="pill"><input type="checkbox" value="On-site if needed"/> On-site if needed</label>
+          </div>
+          <input type="hidden" id="workMode"/>
+        </div>
+
+        <div class="field">
+          <label>Willing to travel?</label>
+          <div class="pill-grid" id="travelGrid">
+            <label class="pill"><input type="checkbox" value="No"/> No</label>
+            <label class="pill"><input type="checkbox" value="Within city"/> Within city</label>
+            <label class="pill"><input type="checkbox" value="Pan-India"/> Pan-India</label>
+            <label class="pill"><input type="checkbox" value="International"/> International</label>
+          </div>
+          <input type="hidden" id="willingToTravel"/>
+        </div>
+
+        <div class="field full">
+          <label>Client types you are most comfortable with</label>
+          <div class="pill-grid" id="clientTypeGrid">
+            <label class="pill"><input type="checkbox" value="Funded startups"/> Funded startups</label>
+            <label class="pill"><input type="checkbox" value="GCCs"/> GCCs</label>
+            <label class="pill"><input type="checkbox" value="MSMEs"/> MSMEs</label>
+            <label class="pill"><input type="checkbox" value="Family offices"/> Family offices</label>
+            <label class="pill"><input type="checkbox" value="Large corporates"/> Large corporates</label>
+            <label class="pill"><input type="checkbox" value="PE / VC backed"/> PE / VC backed</label>
+            <label class="pill"><input type="checkbox" value="No preference"/> No preference</label>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>What kind of mandates excite you most?</label>
+          <div class="pill-grid" id="mandateGrid">
+            <label class="pill"><input type="checkbox" value="Pre-IPO / fundraise readiness"/> Pre-IPO / fundraise readiness</label>
+            <label class="pill"><input type="checkbox" value="Turnaround / restructuring"/> Turnaround / restructuring</label>
+            <label class="pill"><input type="checkbox" value="Building the finance / marketing function from scratch"/> Building the finance / marketing function from scratch</label>
+            <label class="pill"><input type="checkbox" value="GTM strategy"/> GTM strategy</label>
+            <label class="pill"><input type="checkbox" value="Interim leadership cover"/> Interim leadership cover</label>
+            <label class="pill"><input type="checkbox" value="Board / advisory seat"/> Board / advisory seat</label>
+            <label class="pill"><input type="checkbox" value="M&A / integration"/> M&amp;A / integration</label>
+            <label class="pill"><input type="checkbox" value="Process & systems overhaul"/> Process &amp; systems overhaul</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Do you require an NDA or formal agreement? <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="requireNDA">
+              <option value="">Select</option>
+              <option>Yes, always</option>
+              <option>Depends on the engagement</option>
+              <option>No, not necessary</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Experience level in mentoring early-stage startups <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="mentoringExperience">
+              <option value="">Select</option>
+              <option>No experience yet</option><option>1–2 startups</option>
+              <option>3–5 startups</option><option>5–10 startups</option><option>10+ startups</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Previously served as a formal mentor / advisor / board member? <span class="req">*</span></label>
+          <div class="select-wrap">
+            <select id="formalMentor">
+              <option value="">Select</option>
+              <option>Yes</option><option>No</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Equipped to mentor stage of startup development <span class="req">*</span></label>
+          <div class="pill-grid" id="startupStageGrid">
+            <label class="pill"><input type="checkbox" value="Idea / Pre-product"/> Idea / Pre-product</label>
+            <label class="pill"><input type="checkbox" value="MVP / Early traction"/> MVP / Early traction</label>
+            <label class="pill"><input type="checkbox" value="Product-market fit"/> Product-market fit</label>
+            <label class="pill"><input type="checkbox" value="Growth / Scaling"/> Growth / Scaling</label>
+            <label class="pill"><input type="checkbox" value="Series A and beyond"/> Series A and beyond</label>
+            <label class="pill"><input type="checkbox" value="Any stage"/> Any stage</label>
+          </div>
+        </div>
+
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-back" id="back3">&#8592; Back</button>
+        <button type="button" class="btn-next" id="next3">Continue &#8594;</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 4: Online Presence & Files ═══ -->
+    <div class="step" id="step4">
+      <div class="step-label">Step 04 of 05</div>
+      <h1 class="card-title">Online Presence</h1>
+      <p class="card-subtitle">Share your professional links and upload your documents.</p>
+      <hr class="divider"/>
+      <div class="form-grid">
+
+        <div class="field full">
+          <label>Upload your CV / Resume <span class="req">*</span></label>
+          <div class="upload-box" id="cvUploadBox" onclick="driveUpload('cv')" style="cursor:pointer;">
+            <div class="upload-icon">📄</div>
+            <p id="cvLabel">Click to upload via Google Drive</p>
+            <span>PDF or Word — sign in with Google to upload</span>
+          </div>
+          <input type="hidden" id="cvDriveUrl"/>
+        </div>
+
+        <div class="field full">
+          <label>Upload a professional photo <span style="color:var(--muted);font-weight:400;">(optional but recommended)</span></label>
+          <div class="upload-box" id="photoUploadBox" onclick="driveUpload('photo')" style="cursor:pointer;">
+            <div class="upload-icon">🖼️</div>
+            <p id="photoLabel">Click to upload via Google Drive</p>
+            <span>JPG or PNG — sign in with Google to upload</span>
+          </div>
+          <input type="hidden" id="photoDriveUrl"/>
+        </div>
+
+        <div class="full"><div class="section-head">Online Presence</div></div>
+
+        <div class="field full">
+          <label>LinkedIn profile URL <span class="req">*</span></label>
+          <input type="url" id="linkedinProfile" placeholder="https://linkedin.com/in/yourname"/>
+        </div>
+
+        <div class="field">
+          <label>Personal website / portfolio</label>
+          <input type="url" id="websiteUrl" placeholder="https://yourwebsite.com"/>
+        </div>
+
+        <div class="field">
+          <label>Any published articles or media mentions</label>
+          <input type="url" id="articleUrl" placeholder="https://economictimes.com/…"/>
+        </div>
+
+        <div class="field full">
+          <label>Upload work samples <span style="color:var(--muted);font-weight:400;">(optional)</span></label>
+          <div class="upload-box" id="workSamplesUploadBox" onclick="driveUpload('worksamples')" style="cursor:pointer;">
+            <div class="upload-icon">📁</div>
+            <p id="workSamplesLabel">Click to upload via Google Drive</p>
+            <span>Anonymised deliverables, models, frameworks — sign in with Google to upload</span>
+          </div>
+          <input type="hidden" id="workSamplesDriveUrl"/>
+        </div>
+
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-back" id="back4">&#8592; Back</button>
+        <button type="button" class="btn-next" id="next4">Continue &#8594;</button>
+      </div>
+    </div>
+
+    <!-- ═══ STEP 5: Final ═══ -->
+    <div class="step" id="step5">
+      <div class="step-label">Step 05 of 05</div>
+      <h1 class="card-title">Final Details</h1>
+      <p class="card-subtitle">Almost done! Tell us about your top achievements before we review your profile.</p>
+      <hr class="divider"/>
+      <div class="form-grid">
+
+        <div class="field full">
+          <label>Top Achievements <span class="req">*</span></label>
+          <textarea id="topAchievements" style="min-height:140px;" placeholder="e.g. Led a ₹500Cr debt restructuring at XYZ Bank reducing NPAs by 40%, Scaled a SaaS startup from $0 to $5M ARR in 18 months, Built and exited a fintech company acquired by HDFC…" oninput="updateCharCount(this,'achieveCount',0,0)"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span class="hint">Share your 2–3 most impactful achievements with numbers and outcomes.</span>
+            <span class="char-count" id="achieveCount">0 words</span>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Anything else you'd like SWYN to know?</label>
+          <textarea id="additionalInfo" placeholder="Non-compete clauses, geographic restrictions, causes you care about, sectors you won't work in, etc."></textarea>
+        </div>
+
+      </div>
+
+      <!-- Website listing consent -->
+      <div style="margin-top:28px;">
+        <div class="section-head" style="margin-top:0;margin-bottom:20px;">Profile Listing</div>
+        <div class="field full">
+          <label>May we feature your profile on the <a href="https://swyn.in" target="_blank" style="color:var(--orange);text-decoration:none;">swyn.in</a> website? <span class="req">*</span></label>
+          <span class="hint" style="margin-bottom:10px;display:block;">Your profile will be visible to startup founders and companies looking for expert mentors on our platform.</span>
+          <div class="pill-grid" id="websiteListingGrid">
+            <label class="pill"><input type="radio" name="websiteListing" value="Yes, list my full profile"/> Yes, list my full profile</label>
+            <label class="pill"><input type="radio" name="websiteListing" value="Yes, but only my name and headline"/> Yes, name &amp; headline only</label>
+            <label class="pill"><input type="radio" name="websiteListing" value="No, keep my profile private"/> No, keep it private</label>
+          </div>
+          <input type="hidden" id="websiteListingConsent"/>
+        </div>
+      </div>
+
+      <!-- Terms -->
+      <div style="margin-top:28px;">
+        <label class="terms-box">
+          <input type="checkbox" id="termsCheck"/>
+          <p>I confirm that the information I have provided is accurate. I consent to SWYN (Merqury Connections Pvt. Ltd.) storing and processing my data for the purpose of expert matching and engagement facilitation, in accordance with DPDPA 2023. I understand that my profile will not be shared with any third party without my explicit approval.</p>
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn-back" id="back5">&#8592; Back</button>
+        <button type="button" class="btn-next" id="btnSubmit" style="padding:12px 36px;">Submit Application &#8594;</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="step" id="stepSuccess">
+      <div class="success">
+        <div class="success-icon">&#10003;</div>
+        <h2>Application Submitted!</h2>
+        <p>Thank you for applying to join SWYN's expert mentor network.<br/>Our team will review your profile and get in touch within <strong>3–5 business days</strong>.</p>
+        <p style="margin-top:20px;font-size:13px;color:var(--muted);">Questions? Write to us at <a href="/cdn-cgi/l/email-protection#0d64636b624d7e7a7463236463" style="color:var(--orange);"><span class="__cf_email__" data-cfemail="630a0d050c2310141a0d4d0a0d">[email&#160;protected]</span></a></p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── Step & validation ──
+var current = 1; var totalSteps = 5;
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active');});
+  var t = n==='success' ? document.getElementById('stepSuccess') : document.getElementById('step'+n);
+  t.classList.add('active');
+  var pct = n==='success' ? 100 : (n/totalSteps)*100;
+  document.getElementById('progressFill').style.width = pct+'%';
+  var lbl = document.getElementById('progressLabel');
+  if(lbl) lbl.textContent = n==='success' ? 'Complete!' : 'Step '+n+' of '+totalSteps;
+  // Update dots
+  document.querySelectorAll('.dot').forEach(function(d,i){
+    d.classList.remove('active','done');
+    if(n==='success'){ d.classList.add('done'); }
+    else if(i+1 === n){ d.classList.add('active'); }
+    else if(i+1 < n){ d.classList.add('done'); }
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function scrollToFirstError() {
+  var first = document.querySelector('.step.active .err-msg');
+  if(first){ first.scrollIntoView({behavior:'smooth',block:'center'}); }
+}
+
+function updateCharCount(el, countId, minWords, maxWords) {
+  var words = el.value.trim() === '' ? 0 : el.value.trim().split(/\s+/).length;
+  var el2 = document.getElementById(countId);
+  if(!el2) return;
+  el2.textContent = words + ' word' + (words===1?'':'s');
+  el2.className = 'char-count';
+  if(maxWords > 0 && words > maxWords) el2.classList.add('over');
+  else if(minWords > 0 && words < minWords && words > 0) el2.classList.add('warn');
+}
+function getVal(id) { var el=document.getElementById(id); return el?el.value.trim():''; }
+function setErr(id, msg) {
+  var el=document.getElementById(id); if(!el) return;
+  el.style.borderColor='#e03030'; el.style.background='#fff5f5';
+  var wrap=el.closest('.field');
+  if(wrap&&!wrap.querySelector('.err-msg')){var e=document.createElement('span');e.className='err-msg';e.textContent=msg;wrap.appendChild(e);}
+}
+function clearErr(id) {
+  var el=document.getElementById(id); if(!el) return;
+  el.style.borderColor=''; el.style.background='';
+  var wrap=el.closest('.field'); var e=wrap&&wrap.querySelector('.err-msg'); if(e) e.remove();
+}
+function validate(checks) {
+  var ok=true;
+  checks.forEach(function(c){
+    var el=document.getElementById(c.id); if(!el) return;
+    var val = el.value ? el.value.trim() : '';
+    if(!val){ setErr(c.id,c.msg); ok=false; } else { clearErr(c.id); }
+  });
+  return ok;
+}
+function clearPillErr(gridId) {
+  var grid = document.getElementById(gridId); if(!grid) return;
+  grid.style.outline = ''; grid.style.borderRadius = '';
+  var wrap = grid.closest('.field');
+  var e = wrap && wrap.querySelector('.err-msg'); if(e) e.remove();
+}
+function getPillValues(gridId) {
+  return Array.from(document.querySelectorAll('#'+gridId+' input:checked')).map(function(i){return i.value;}).join(', ');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+
+  // Global Enter key → move to next field or advance step
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Enter' && e.keyCode !== 13) return;
+    var active = document.activeElement;
+    var tag = active ? active.tagName : '';
+    var id  = active ? active.id : '';
+    var skipIds = ['notableCompanyInput', 'pastClientInput', 'expertiseOther'];
+    if (tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (skipIds.indexOf(id) !== -1) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Field order: Enter moves to next field
+    var fieldOrder = ['firstName','lastName','primaryEmail','phoneNumber','headline',
+                      'jobTitle','currentCompany',
+                      'linkedinProfile','websiteUrl','articleUrl',
+                      'topAchievements','additionalInfo'];
+    var stepLast = {'headline':'next1','currentCompany':'next2','articleUrl':'next4','additionalInfo':'btnSubmit'};
+    var idx = fieldOrder.indexOf(id);
+
+    if (idx !== -1 && idx < fieldOrder.length - 1 && !stepLast[id]) {
+      // Move focus to next field
+      var nextField = document.getElementById(fieldOrder[idx + 1]);
+      if (nextField) { nextField.focus(); return; }
+    }
+    if (stepLast[id]) {
+      // Last field in step — click Next
+      var btn = document.getElementById(stepLast[id]);
+      if (btn) { btn.click(); return; }
+    }
+
+    // Fallback: advance current step
+    var nextIds = ['next1', 'next2', 'next3', 'next4', 'btnSubmit'];
+    var btn = document.getElementById(nextIds[current - 1]);
+    if (btn) btn.click();
+  });
+
+  // Auto-clear errors + live validation feedback
+  document.querySelectorAll('input,select,textarea').forEach(function(el) {
+    ['input','change'].forEach(function(evt){
+      el.addEventListener(evt, function(){
+        el.style.borderColor = ''; el.style.background = '';
+        el.style.boxShadow = '';
+        var wrap = el.closest('.field');
+        var e = wrap && wrap.querySelector('.err-msg'); if(e) e.remove();
+      });
+    });
+    // Show green border when field has valid content and loses focus
+    el.addEventListener('blur', function(){
+      if(el.type === 'hidden' || el.tagName === 'SELECT') return;
+      var fieldWrap = el.closest('.field');
+      if(el.value && el.value.trim() && !(fieldWrap && fieldWrap.querySelector('.err-msg'))){
+        el.style.borderColor = '#7cb87f';
+      }
+    });
+    el.addEventListener('focus', function(){
+      el.style.borderColor = '';
+    });
+  });
+
+  // Live email format hint
+  var emailEl = document.getElementById('primaryEmail');
+  if(emailEl){
+    emailEl.addEventListener('blur', function(){
+      if(emailEl.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())){
+        setErr('primaryEmail','Please enter a valid email address.');
+      }
+    });
+  }
+
+  // Pill radio/checkbox toggle
+  document.querySelectorAll('.pill input').forEach(function(inp) {
+    inp.addEventListener('change', function() {
+      if (inp.type === 'radio') {
+        var name = inp.name;
+        document.querySelectorAll('.pill input[name="'+name+'"]').forEach(function(r){ r.closest('.pill').classList.remove('selected'); });
+        inp.closest('.pill').classList.add('selected');
+        // store in hidden
+        if (name==='simultaneous') document.getElementById('simultaneousEngagements').value = inp.value;
+        if (name==='websiteListing') { document.getElementById('websiteListingConsent').value = inp.value; clearPillErr('websiteListingGrid'); }
+      } else {
+        inp.closest('.pill').classList.toggle('selected', inp.checked);
+        var gridId = inp.closest('.pill-grid') && inp.closest('.pill-grid').id;
+        if (gridId === 'engagementTypeGrid') {
+          document.getElementById('engagementTypes').value = getPillValues('engagementTypeGrid');
+        }
+        if (gridId === 'workModeGrid') {
+          document.getElementById('workMode').value = getPillValues('workModeGrid');
+        }
+        if (gridId === 'travelGrid') {
+          document.getElementById('willingToTravel').value = getPillValues('travelGrid');
+        }
+        if (gridId) clearPillErr(gridId);
+      }
+    });
+  });
+
+  // STEP 1
+  document.getElementById('next1').addEventListener('click', function() {
+    var checks = [
+      {id:'firstName',msg:'Please enter your first name.'},
+      {id:'lastName',msg:'Please enter your last name.'},
+      {id:'primaryEmail',msg:'Please enter your personal email.'},
+      {id:'phoneNumber',msg:'Please enter your mobile number.'},
+      {id:'city',msg:'Please select your city.'},
+      {id:'headline',msg:'Please enter your professional headline.'},
+    ];
+    if (getVal('city')==='Other') checks.push({id:'cityOther',msg:'Please specify your city.'});
+    var ok = validate(checks);
+    // Phone format check
+    var phone = document.getElementById('phoneNumber');
+    var digits = phone.value.replace(/\D/g,'');
+    if (phone.value && (digits.length < 7 || digits.length > 15)) {
+      setErr('phoneNumber','Enter a valid phone number (7–15 digits with country code).');
+      ok = false;
+    }
+    // Email format check
+    var email = document.getElementById('primaryEmail');
+    if (email.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+      setErr('primaryEmail','Please enter a valid email address.');
+      ok = false;
+    }
+    if (ok) { current=2; showStep(current); } else { scrollToFirstError(); }
+  });
+
+  // STEP 2
+  document.getElementById('back2').addEventListener('click', function(){ current=1; showStep(current); });
+  document.getElementById('next2').addEventListener('click', function() {
+    var checks = [
+      {id:'jobTitle',msg:'Please enter your current job title.'},
+      {id:'yearsExperience',msg:'Please select your years of experience.'},
+      {id:'primaryIndustry',msg:'Please select your primary industry.'},
+      {id:'biography',msg:'Please provide a professional biography.'},
+    ];
+    if (getVal('primaryIndustry')==='Other') checks.push({id:'industryOther',msg:'Please specify your industry.'});
+    var ok = validate(checks);
+    // Sector check
+    if (!getPillValues('sectorGrid')) {
+      var sg = document.getElementById('sectorGrid');
+      sg.style.outline = '2px solid #e03030'; sg.style.borderRadius = '8px';
+      var wrap = sg.closest('.field');
+      if (!wrap.querySelector('.err-msg')) { var e=document.createElement('span');e.className='err-msg';e.style.display='block';e.textContent='Please select at least one key sector.';wrap.appendChild(e); }
+      ok = false;
+    } else { clearPillErr('sectorGrid'); }
+    // Expertise check
+    if (!getVal('areasOfExpertiseHidden')) {
+      var ef = document.getElementById('areasOfExpertise');
+      ef.style.borderColor = '#e03030';
+      var wrap2 = ef.closest('.field');
+      if (!wrap2.querySelector('.err-msg')) { var e2=document.createElement('span');e2.className='err-msg';e2.textContent='Please select at least one area of expertise.';wrap2.appendChild(e2); }
+      ok = false;
+    } else { clearErr('areasOfExpertise'); }
+    // Engagement types — re-sync hidden field first
+    var engVal = getPillValues('engagementTypeGrid');
+    document.getElementById('engagementTypes').value = engVal;
+    if (!engVal) {
+      var eg = document.getElementById('engagementTypeGrid');
+      eg.style.outline = '2px solid #e03030'; eg.style.borderRadius = '8px';
+      var wrapEg = eg.closest('.field');
+      if (!wrapEg.querySelector('.err-msg')) { var eEg=document.createElement('span');eEg.className='err-msg';eEg.style.display='block';eEg.textContent='Please select at least one engagement type.';wrapEg.appendChild(eEg); }
+      ok = false;
+    } else { clearPillErr('engagementTypeGrid'); }
+    if (ok) { current=3; showStep(current); } else { scrollToFirstError(); }
+  });
+
+  // STEP 3
+  document.getElementById('back3').addEventListener('click', function(){ current=2; showStep(current); });
+  document.getElementById('next3').addEventListener('click', function() {
+    var checks = [
+      {id:'hourlyRate',msg:'Please select your preferred hourly rate (USD).'},
+      {id:'hourlyRateINR',msg:'Please select your preferred hourly rate (INR).'},
+      {id:'hoursPerMonth',msg:'Please select hours per month.'},
+      {id:'requireNDA',msg:'Please select your NDA preference.'},
+      {id:'mentoringExperience',msg:'Please select your mentoring experience.'},
+      {id:'formalMentor',msg:'Please select an option.'},
+    ];
+    var ok = validate(checks);
+    // Startup stage check
+    if (!getPillValues('startupStageGrid')) {
+      var sg = document.getElementById('startupStageGrid');
+      sg.style.outline = '2px solid #e03030'; sg.style.borderRadius = '8px';
+      var wrap = sg.closest('.field');
+      if (!wrap.querySelector('.err-msg')) { var e=document.createElement('span');e.className='err-msg';e.style.display='block';e.textContent='Please select at least one startup stage.';wrap.appendChild(e); }
+      ok = false;
+    } else { clearPillErr('startupStageGrid'); }
+    if (ok) { current=4; showStep(current); } else { scrollToFirstError(); }
+  });
+
+  // STEP 4
+  document.getElementById('back4').addEventListener('click', function(){ current=3; showStep(current); });
+  document.getElementById('next4').addEventListener('click', function() {
+    var checks = [{id:'linkedinProfile',msg:'Please enter your LinkedIn profile URL.'}];
+    var ok = validate(checks);
+    // CV upload check — now uses Google Drive URL
+    var cvUrl = document.getElementById('cvDriveUrl');
+    var cvBox = document.getElementById('cvUploadBox');
+    var cvField = cvBox ? cvBox.closest('.field') : null;
+    if (!cvUrl || !cvUrl.value) {
+      if (cvBox) { cvBox.style.borderColor = '#c0392b'; cvBox.style.background = '#fff5f5'; }
+      if (cvField && !cvField.querySelector('.err-msg')) {
+        var cvErr = document.createElement('span');
+        cvErr.className = 'err-msg'; cvErr.textContent = 'Please upload your CV or Resume via Google Drive.';
+        cvField.appendChild(cvErr);
+      }
+      ok = false;
+    } else {
+      if (cvBox) { cvBox.style.borderColor = ''; cvBox.style.background = ''; }
+      if (cvField) { var e = cvField.querySelector('.err-msg'); if(e) e.remove(); }
+    }
+    if (ok) { current=5; showStep(current); } else { scrollToFirstError(); }
+  });
+
+  // STEP 5
+  document.getElementById('back5').addEventListener('click', function(){ current=4; showStep(current); });
+  document.getElementById('btnSubmit').addEventListener('click', function() {
+    var checks = [
+      {id:'topAchievements', msg:'Please share your top achievements.'},
+    ];
+    var ok = validate(checks);
+    // Website listing consent — radio pill, read directly
+    var listingChecked = document.querySelector('#websiteListingGrid input:checked');
+    var listingVal = listingChecked ? listingChecked.value : '';
+    document.getElementById('websiteListingConsent').value = listingVal;
+    if (!listingVal) {
+      var wlGrid = document.getElementById('websiteListingGrid');
+      wlGrid.style.outline = '2px solid #e03030'; wlGrid.style.borderRadius = '8px';
+      var wlWrap = wlGrid.closest('.field');
+      if (!wlWrap.querySelector('.err-msg')) { var wlE=document.createElement('span');wlE.className='err-msg';wlE.style.display='block';wlE.textContent='Please select your website listing preference.';wlWrap.appendChild(wlE); }
+      ok = false;
+    } else { clearPillErr('websiteListingGrid'); }
+    var termsOk = document.getElementById('termsCheck').checked;
+    if (!termsOk) {
+      var tb = document.getElementById('termsCheck').closest('.terms-box');
+      tb.style.borderColor = '#e03030';
+      if (!document.getElementById('termsErrMsg')) {
+        var err=document.createElement('span');err.className='err-msg';err.id='termsErrMsg';err.style.display='block';err.style.marginTop='6px';
+        err.textContent='Please confirm and agree to continue.'; tb.parentElement.appendChild(err);
+      }
+    } else {
+      var tb2 = document.getElementById('termsCheck').closest('.terms-box');
+      if(tb2) tb2.style.borderColor='';
+      var te=document.getElementById('termsErrMsg'); if(te) te.remove();
+    }
+    if (!ok || !termsOk) { scrollToFirstError(); return; }
+
+    var data = {
+      'Full Name': getVal('firstName')+' '+getVal('lastName'),
+      'Primary Email Address': getVal('primaryEmail'),
+      'Phone Number (including country code)': getVal('phoneNumber'),
+      'City': getVal('city')==='Other'?getVal('cityOther'):getVal('city'),
+      'Current professional headline': getVal('headline'),
+      'Gender': getVal('gender'),
+      'How did you hear about SWYN?': getVal('heardAbout')==='Other'?getVal('heardAboutOther'):getVal('heardAbout'),
+      'Current Job Title/Role': getVal('jobTitle'),
+      'Current Company/Organization': getVal('currentCompany'),
+      'Total Years of Professional Experience': getVal('yearsExperience'),
+      'Primary Industry of Expertise': getVal('primaryIndustry')==='Other'?getVal('industryOther'):getVal('primaryIndustry'),
+      'Please provide a brief biography/professional summary': getVal('biography'),
+      'Key sectors / industries': getPillValues('sectorGrid'),
+      'Type of companies you have worked with': getPillValues('companyTypeGrid'),
+      'Notable companies worked for': getVal('notableCompaniesHidden'),
+      'Types of engagements open to': getVal('engagementTypes'),
+      'Past clients or companies advised': getVal('pastClientsHidden'),
+      'Specific Areas of Expertise for Mentorship': getVal('areasOfExpertiseHidden'),
+      'Preferred hourly rate card (In USD)': getVal('hourlyRate'),
+      'Preferred hourly rate card (In INR)': getVal('hourlyRateINR'),
+      "If 'Negotiable' (USD), please specify details:": getVal('rateNegotiable'),
+      "If 'Negotiable' (INR), please specify details:": getVal('rateNegotiableINR'),
+      'Hours per month for mentoring startup founders': getVal('hoursPerMonth'),
+      'Number of simultaneous engagements': getVal('simultaneousEngagements'),
+      'Work mode preference': getVal('workMode'),
+      'Willingness to travel for events/meetups': getVal('willingToTravel'),
+      'Client types most comfortable with': getPillValues('clientTypeGrid'),
+      'What kind of mandates excite you most?': getPillValues('mandateGrid'),
+      'Do you require an NDA or formal agreement?': getVal('requireNDA'),
+      'Experience level in mentoring early-stage startups': getVal('mentoringExperience'),
+      'Previously served as a formal mentor/advisor/board member?': getVal('formalMentor'),
+      'Equipped to mentor stage of startup development': getPillValues('startupStageGrid'),
+      'Link to your LinkedIn Profile': getVal('linkedinProfile'),
+      'Personal website / portfolio': getVal('websiteUrl'),
+      'Any published articles or media mentions': getVal('articleUrl'),
+      'Top Achievements': getVal('topAchievements'),
+      'Consent to list on swyn.in': getVal('websiteListingConsent'),
+      'Anything else you would like SWYN to know?': getVal('additionalInfo'),
+      'CV / Resume (Google Drive)': getVal('cvDriveUrl'),
+      'Professional Photo (Google Drive)': getVal('photoDriveUrl'),
+      'Work Samples (Google Drive)': getVal('workSamplesDriveUrl'),
+      'Submitted At': new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})
+    };
+
+    var btn = document.getElementById('btnSubmit');
+    btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
+
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzz_kzR8OOOWCQUuTrxS2GgEZxBfQiihvhlc_0O9tBiFfWJ-5fIUetuHTyhCSBDPfbr/exec';
+
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(function() {
+      btn.textContent = 'Submit Application →';
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      current = 'success';
+      showStep('success');
+    })
+    .catch(function(err) {
+      console.error('Submission error:', err);
+      btn.textContent = 'Submit Application →';
+      btn.disabled = false;
+      btn.classList.remove('loading');
+      alert('Something went wrong. Please try again.');
+    });
+  });
+
+}); // end DOMContentLoaded
+
+// ── Google Drive Upload via resumable upload + Drive API ──────────────────
+// Replace these with your actual values from Google Cloud Console
+var GDRIVE_CLIENT_ID   = '135903158453-a5uh1um865qs3he2jvac56n4gjbf99mm.apps.googleusercontent.com';   // OAuth 2.0 Client ID
+var GDRIVE_FOLDER_ID   = '1Qf-7mIeXN13tPWbcR_OHbvxwAWc-lhlg'; // Target folder in Drive
+
+var _driveTokenClient = null;
+var _driveAccessToken = null;
+var _pendingUploadType = null;
+
+// Map upload type → config
+var _uploadConfig = {
+  cv:          { hiddenId: 'cvDriveUrl',          labelId: 'cvLabel',          boxId: 'cvUploadBox',          accept: '.pdf,.doc,.docx',                     prompt: 'Select your CV / Resume (PDF or Word)' },
+  photo:       { hiddenId: 'photoDriveUrl',        labelId: 'photoLabel',       boxId: 'photoUploadBox',       accept: '.jpg,.jpeg,.png',                     prompt: 'Select your professional photo (JPG or PNG)' },
+  worksamples: { hiddenId: 'workSamplesDriveUrl',  labelId: 'workSamplesLabel', boxId: 'workSamplesUploadBox', accept: '.pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx', prompt: 'Select your work sample file' }
+};
+
+var _gsiLoaded = false;
+var _gsiLoading = false;
+var _gsiQueue = [];
+
+function _onGsiLoaded() {
+  _gsiLoaded = true;
+  _driveTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GDRIVE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/drive.file',
+    callback: function(tokenResponse) {
+      if (tokenResponse && tokenResponse.access_token) {
+        _driveAccessToken = tokenResponse.access_token;
+        _openFilePicker(_pendingUploadType);
+      }
+    }
+  });
+  // Flush queued calls
+  _gsiQueue.forEach(function(t) { driveUpload(t); });
+  _gsiQueue = [];
+}
+
+function driveUpload(type) {
+  _pendingUploadType = type;
+  if (!_gsiLoaded) {
+    _gsiQueue.push(type);
+    if (!_gsiLoading) {
+      _gsiLoading = true;
+      var script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = _onGsiLoaded;
+      script.onerror = function() {
+        _gsiLoading = false;
+        alert('Could not load Google Sign-In. Please check your internet connection.');
+      };
+      document.head.appendChild(script);
+    }
+    return;
+  }
+  if (_driveAccessToken) {
+    _openFilePicker(type);
+  } else {
+    _driveTokenClient.requestAccessToken({ prompt: '' });
+  }
+}
+
+function _openFilePicker(type) {
+  var cfg = _uploadConfig[type];
+  var fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = cfg.accept;
+  fileInput.style.display = 'none';
+  document.body.appendChild(fileInput);
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files && fileInput.files[0]) {
+      _uploadFileToDrive(fileInput.files[0], type);
+    }
+    document.body.removeChild(fileInput);
+  });
+  fileInput.click();
+}
+
+function _uploadFileToDrive(file, type) {
+  var cfg = _uploadConfig[type];
+  var box = document.getElementById(cfg.boxId);
+  var lbl = document.getElementById(cfg.labelId);
+  if (lbl) lbl.textContent = '⏳ Uploading…';
+  if (box) { box.style.borderStyle = 'solid'; box.style.borderColor = 'var(--orange)'; }
+
+  // Step 1: initiate resumable upload session
+  var metadata = {
+    name: file.name,
+    mimeType: file.type || 'application/octet-stream',
+    parents: GDRIVE_FOLDER_ID ? [GDRIVE_FOLDER_ID] : []
+  };
+
+  fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + _driveAccessToken,
+      'Content-Type': 'application/json; charset=UTF-8',
+      'X-Upload-Content-Type': file.type || 'application/octet-stream',
+      'X-Upload-Content-Length': file.size
+    },
+    body: JSON.stringify(metadata)
+  })
+  .then(function(res) {
+    if (!res.ok) throw new Error('Failed to initiate upload session');
+    var uploadUrl = res.headers.get('Location');
+    // Step 2: upload file bytes
+    return fetch(uploadUrl, {
+      method: 'PUT',
+      headers: { 'Content-Type': file.type || 'application/octet-stream' },
+      body: file
+    });
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(fileData) {
+    // Step 3: make file shareable (anyone with link can view)
+    return fetch('https://www.googleapis.com/drive/v3/files/' + fileData.id + '/permissions', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + _driveAccessToken,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ role: 'reader', type: 'anyone' })
+    }).then(function() { return fileData; });
+  })
+  .then(function(fileData) {
+    var shareUrl = 'https://drive.google.com/file/d/' + fileData.id + '/view?usp=sharing';
+    document.getElementById(cfg.hiddenId).value = shareUrl;
+    if (lbl) lbl.textContent = '✓ ' + file.name;
+    if (box) {
+      box.classList.add('upload-done');
+      box.style.borderColor = 'var(--orange)';
+      box.style.borderStyle = 'solid';
+      box.style.background = '#fff8f4';
+    }
+    // Clear any error on this field
+    var field = box ? box.closest('.field') : null;
+    if (field) { var e = field.querySelector('.err-msg'); if(e) e.remove(); }
+  })
+  .catch(function(err) {
+    console.error('Drive upload error:', err);
+    if (lbl) lbl.textContent = '❌ Upload failed — try again';
+    if (box) { box.style.borderColor = '#c0392b'; box.style.background = '#fff5f5'; }
+    // Token may have expired — clear it so next click re-authenticates
+    _driveAccessToken = null;
+  });
+}
+
+</script>
 </body>
 </html>
