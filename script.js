@@ -1,6 +1,6 @@
 
 var current = 1; var totalSteps = 5;
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwudk95NH72jN0UrJAKg-c0BBynYfwogDuwyElVKJcxx5U3fnl-PkgpbWau7VurnSbUgw/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxMEF9mcVThQBYV_yhQ8EhKqa478bn8m_wYNlXpi1-WwgUlqM29Su6JDh4s_-ELpWQjAA/exec';
 var fileUploadPromises = {};
 
 function showStep(n) {
@@ -67,19 +67,12 @@ function getPillValues(gridId) {
 }
 
 function parseJsonResponse(response) {
-  if (response.type === 'opaque') {
-    console.warn('[SWYN] opaque response received from no-cors request; assuming success');
-    return Promise.resolve({ success: true, url: '' });
-  }
   return response.text().then(function(text) {
     if (!response.ok) {
       throw new Error('Server returned status ' + response.status + ': ' + text);
     }
-    try {
-      return JSON.parse(text);
-    } catch (err) {
-      throw new Error('Invalid JSON response: ' + text);
-    }
+    try { return JSON.parse(text); }
+    catch (err) { throw new Error('Invalid JSON response: ' + text); }
   });
 }
 
@@ -439,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('[SWYN] encoded payload:', formBody);
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
+        
       headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
       body: formBody
     })
@@ -453,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          mode: 'no-cors',
+            
           headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
           body: formBody
         })
@@ -612,7 +605,7 @@ function handleDropFiles(input, zoneId, listId, hiddenId) {
           console.log('[SWYN] upload body for', file.name, uploadBody);
           fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
+              
             headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
             body: uploadBody
           })
