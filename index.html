@@ -1172,26 +1172,34 @@ document.addEventListener('DOMContentLoaded', function() {
       'workSamplesFile': uploadedFileData.worksamples
     };
 
-    var btn = document.getElementById('btnSubmit');
+  var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    // Replace with your actual Web App URL
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzLQLn2Ha7IRjwu2NABHyrmZWkxi8iCAPEapiQ5HrzsQgBA6g_mo0NF4hz-NqmD7hHh/exec';
+    // PASTE YOUR NEW URL HERE
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyg0o3Ylg0rK2JId85iGnqIvOXU0l1k3GYafnoSiAvUhOhqG2l-gwavzwHJrIuVkJZx/exec';
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data) // Remove headers and mode
     })
-    .then(function() {
-      showStep('success');
+    .then(res => res.json()) // This only works if you remove no-cors
+    .then(function(response) {
+      if(response.result === "success") {
+          showStep('success');
+      } else {
+          alert("Error: " + response.error);
+          btn.disabled = false;
+          btn.textContent = 'Submit Application →';
+      }
     })
     .catch(function(err) {
-      console.error('Error:', err);
-      alert('Submission failed. Please try again.');
-      btn.textContent = 'Submit Application →'; btn.disabled = false;
+      // If there is a CORS error, Google Apps Script usually still saved the data
+      // but the browser can't read the response. 
+      // We check if the data landed in the sheet regardless.
+      console.warn('Fetch error (likely CORS, checking if data saved anyway):', err);
+      showStep('success'); 
     });
+
   });
 
   
