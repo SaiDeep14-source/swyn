@@ -367,8 +367,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-     mode: 'cors',
-     headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
     .then(function() {
@@ -383,8 +381,6 @@ document.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-        mode: 'cors',
-     headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         })
         .then(function() {
@@ -520,8 +516,6 @@ function handleDropFiles(input, zoneId, listId, hiddenId) {
       var base64 = ev.target.result.split(',')[1];
   fetch(GAS_URL, {
   method: "POST",
-  mode: "cors",
-  headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     action: 'uploadFile',
     type: uploadType,
