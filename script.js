@@ -1,6 +1,6 @@
 
 var current = 1; var totalSteps = 5;
-var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbys0xiX_ZJDLN0hV-WhH6vVH0vKuoHKkPihD473KlENBIxn9AiZqtu_ndcmB1sdAfh8gQ/exec';
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwudk95NH72jN0UrJAKg-c0BBynYfwogDuwyElVKJcxx5U3fnl-PkgpbWau7VurnSbUgw/exec';
 var fileUploadPromises = {};
 
 function showStep(n) {
