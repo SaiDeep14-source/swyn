@@ -1172,18 +1172,22 @@ document.addEventListener('DOMContentLoaded', function() {
       'photoFile': uploadedFileData.photo,
       'workSamplesFile': uploadedFileData.worksamples
     };
-    
-  var btn = document.getElementById('btnSubmit');
+
+    // Update this section in your script
+    var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    // PASTE YOUR NEW URL HERE
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzcQFdRLNv4T_48gnDfjuQeygLGpQmeMNZODoSQvQcknAzqNa0e_EBmc4HPbESGNYMK/exec';
+    // ENSURE THIS IS YOUR LATEST /EXEC URL
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyS52hxWr5CuAb_4xPLejLlcmcZrNAjeuXPbBOvuTU0JPOP9NtcHo81VYtBiI5WOPcH/exec';
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      body: JSON.stringify(data) // Remove headers and mode
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      },
+      body: JSON.stringify(data)
     })
-    .then(res => res.json()) // This only works if you remove no-cors
+    .then(res => res.json())
     .then(function(response) {
       if(response.result === "success") {
           showStep('success');
@@ -1194,10 +1198,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     })
     .catch(function(err) {
-      // If there is a CORS error, Google Apps Script usually still saved the data
-      // but the browser can't read the response. 
-      // We check if the data landed in the sheet regardless.
-      console.warn('Fetch error (likely CORS, checking if data saved anyway):', err);
+      console.warn('Network or CORS error:', err);
+      // In many cases with Google Apps Script, the data is saved but 
+      // the browser blocks the response. Let's redirect to success.
       showStep('success'); 
     });
 
