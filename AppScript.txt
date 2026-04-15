@@ -1,5 +1,9 @@
 function doPost(e) {
   try {
+
+    if (!e || !e.postData || !e.postData.contents) {
+      throw new Error("No data received");}
+    
    var sheet = SpreadsheetApp
    .openById("1C-XiCMomqdFy_XJsciqd2Q-xNDsdetxGa2VGRBbHXmM")
     .getSheetByName("SWYN EXPERTS DETAILS");

@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz4nL1dvv9FiVCsGDQD-tP63Qg2VLYcQ--5qqLvo5q71X13gEVQcFJUU2o07M2H_Ps/exec';
+    var APPS_SCRIPT_URL ="https://script.google.com/macros/s/AKfycbx6le0JZGSEmO8VKcfMGVcqRD5cbZDd-wfFMhuwfq6bN941ChgpBzbNDX2ymYLh7YB5/exec";
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
@@ -509,7 +509,7 @@ function handleDropFiles(input, zoneId, listId, hiddenId) {
   }
 
   // Upload each file to Google Apps Script as base64 JSON
-  var GAS_URL = "https://script.google.com/macros/s/AKfycbz4nL1dvv9FiVCsGDQD-tP63Qg2VLYcQ--5qqLvo5q71X13gEVQcFJUU2o07M2H_Ps/exec";
+  var GAS_URL ="https://script.google.com/macros/s/AKfycbx6le0JZGSEmO8VKcfMGVcqRD5cbZDd-wfFMhuwfq6bN941ChgpBzbNDX2ymYLh7YB5/exec";
   var typeMap = { cvZone:'cv', photoZone:'photo', samplesZone:'worksamples' };
   var uploadType = typeMap[zoneId] || 'cv';
 
