@@ -760,7 +760,7 @@ function selectRating(fieldId, groupId, val) {
           <div class="upload-box" id="cvUploadBox" onclick="driveUpload('cv')" style="cursor:pointer;">
             <div class="upload-icon">📄</div>
             <p id="cvLabel">Click to upload your file!</p>
-            <span>PDF or Word — sign in with Google to upload</span>
+            <span>PDF or Word — choose from Disk to upload</span>
           </div>
           <input type="hidden" id="cvDriveUrl"/>
         </div>
@@ -770,7 +770,7 @@ function selectRating(fieldId, groupId, val) {
           <div class="upload-box" id="photoUploadBox" onclick="driveUpload('photo')" style="cursor:pointer;">
             <div class="upload-icon">🖼️</div>
             <p id="photoLabel">Click to upload your file!</p>
-            <span>JPG or PNG — sign in with Google to upload</span>
+            <span>JPG or PNG — choose from Disk to upload</span>
           </div>
           <input type="hidden" id="photoDriveUrl"/>
         </div>
@@ -797,7 +797,7 @@ function selectRating(fieldId, groupId, val) {
           <div class="upload-box" id="workSamplesUploadBox" onclick="driveUpload('worksamples')" style="cursor:pointer;">
             <div class="upload-icon">📁</div>
             <p id="workSamplesLabel">Click to upload your file!</p>
-            <span>Anonymised deliverables, models, frameworks — sign in with Google to upload</span>
+            <span>Anonymised deliverables, models, frameworks — choose from Disk to upload</span>
           </div>
           <input type="hidden" id="workSamplesDriveUrl"/>
         </div>
@@ -1125,58 +1125,59 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!ok) { scrollToFirstError(); return; }
 
     // Aggregate all data
-    var data = {
-      'Full Name': getVal('firstName')+' '+getVal('lastName'),
-      'Primary Email Address': getVal('primaryEmail'),
-      'Phone Number (including country code)': getVal('phoneNumber'),
-      'City': getVal('city')==='Other'?getVal('cityOther'):getVal('city'),
+ var data = {
+      'First name': getVal('firstName'),
+      'Last name': getVal('lastName'),
+      'Personal email': getVal('primaryEmail'),
+      'Mobile number (with country code)': getVal('phoneNumber'),
+      'City': getVal('city') === 'Other' ? getVal('cityOther') : getVal('city'),
       'Current professional headline': getVal('headline'),
       'Gender': getVal('gender'),
-      'How did you hear about SWYN?': getVal('heardAbout')==='Other'?getVal('heardAboutOther'):getVal('heardAbout'),
-      'Current Job Title/Role': getVal('jobTitle'),
-      'Current Company/Organization': getVal('currentCompany'),
+      'How did you hear about SWYN?': getVal('heardAbout') === 'Other' ? getVal('heardAboutOther') : getVal('heardAbout'),
+      'Current Job Title / Role': getVal('jobTitle'),
+      'Current Company / Organization': getVal('currentCompany'),
       'Total Years of Professional Experience': getVal('yearsExperience'),
-      'Primary Industry of Expertise': getVal('primaryIndustry')==='Other'?getVal('industryOther'):getVal('primaryIndustry'),
-      'Please provide a brief biography/professional summary': getVal('biography'),
+      'Primary Industry of Expertise': getVal('primaryIndustry') === 'Other' ? getVal('industryOther') : getVal('primaryIndustry'),
+      'Please provide a brief biography / professional summary': getVal('biography'),
       'Key sectors / industries': getPillValues('sectorGrid'),
       'Type of companies you have worked with': getPillValues('companyTypeGrid'),
-      'Notable companies worked for': getVal('notableCompaniesHidden'),
-      'Types of engagements open to': getPillValues('engagementTypeGrid'),
-      'Past clients or companies advised': getVal('pastClientsHidden'),
+      'Notable companies / organisations you have worked for': getVal('notableCompaniesHidden'),
+      'Types of engagements you\'re open to': getPillValues('engagementTypeGrid'),
+      'Past clients or companies you\'ve advised (as a consultant / advisor)': getVal('pastClientsHidden'),
       'Specific Areas of Expertise for Mentorship': getVal('areasOfExpertiseHidden'),
-      'Preferred hourly rate card (In USD)': getVal('hourlyRate'),
-      'Preferred hourly rate card (In INR)': getVal('hourlyRateINR'),
-      "If 'Negotiable' (USD), please specify details:": getVal('rateNegotiable'),
-      "If 'Negotiable' (INR), please specify details:": getVal('rateNegotiableINR'),
+      'International clients — rate (USD)': getVal('hourlyRate'),
+      'Indian clients — rate (INR)': getVal('hourlyRateINR'),
+      "If 'Negotiable' (USD), please specify": getVal('rateNegotiable'),
+      "If 'Negotiable' (INR), please specify": getVal('rateNegotiableINR'),
       'Hours per month for mentoring startup founders': getVal('hoursPerMonth'),
-      'Number of simultaneous engagements': document.getElementById('simultaneousEngagements').value,
+      'Number of simultaneous engagements you can handle': document.getElementById('simultaneousEngagements').value,
       'Work mode preference': getPillValues('workModeGrid'),
-      'Willingness to travel for events/meetups': getPillValues('travelGrid'),
-      'Client types most comfortable with': getPillValues('clientTypeGrid'),
+      'Willing to travel?': getPillValues('travelGrid'),
+      'Client types you are most comfortable with': getPillValues('clientTypeGrid'),
       'What kind of mandates excite you most?': getPillValues('mandateGrid'),
       'Do you require an NDA or formal agreement?': getVal('requireNDA'),
       'Experience level in mentoring early-stage startups': getVal('mentoringExperience'),
-      'Previously served as a formal mentor/advisor/board member?': getVal('formalMentor'),
+      'Previously served as a formal mentor / advisor / board member?': getVal('formalMentor'),
       'Equipped to mentor stage of startup development': getPillValues('startupStageGrid'),
-      'Link to your LinkedIn Profile': getVal('linkedinProfile'),
+      'LinkedIn profile URL': getVal('linkedinProfile'),
       'Personal website / portfolio': getVal('websiteUrl'),
       'Any published articles or media mentions': getVal('articleUrl'),
       'Top Achievements': getVal('topAchievements'),
-      'Consent to list on swyn.in': listingChecked.value,
-      'Anything else you would like SWYN to know?': getVal('additionalInfo'),
-      'Submitted At': new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}),
-      
-      // The Base64 file objects for the Backend to process
+      'May we feature your profile on the swyn.in website?': listingChecked ? listingChecked.value : '',
+      'Anything else you\'d like SWYN to know?': getVal('additionalInfo'),
+      'Submitted At': new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+
+      // File objects for backend processing
       'cvFile': uploadedFileData.cv,
       'photoFile': uploadedFileData.photo,
       'workSamplesFile': uploadedFileData.worksamples
     };
-
+    
   var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
     // PASTE YOUR NEW URL HERE
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxi-nBLnvd_BqacSDzO-meE1Y6cGuS5Y4z6mfnaAG30MgVW0nuqtiYI3DIH6E7gPAt1/exec';
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyKU6LvBvcmJ2zMAOonxTcCS-A_ogTSkTVLnNKyqu6OLYVC3oXRkVWPZiAQi3smYziT/exec';
 
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
