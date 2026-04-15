@@ -1,5 +1,7 @@
 
 var current = 1; var totalSteps = 5;
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbys0xiX_ZJDLN0hV-WhH6vVH0vKuoHKkPihD473KlENBIxn9AiZqtu_ndcmB1sdAfh8gQ/exec';
+var fileUploadPromises = {};
 
 function showStep(n) {
   document.querySelectorAll('.step').forEach(function(s){s.classList.remove('active');});
@@ -62,6 +64,23 @@ function clearPillErr(gridId) {
 }
 function getPillValues(gridId) {
   return Array.from(document.querySelectorAll('#'+gridId+' input:checked')).map(function(i){return i.value;}).join(', ');
+}
+
+function parseJsonResponse(response) {
+  if (response.type === 'opaque') {
+    console.warn('[SWYN] opaque response received from no-cors request; assuming success');
+    return Promise.resolve({ success: true, url: '' });
+  }
+  return response.text().then(function(text) {
+    if (!response.ok) {
+      throw new Error('Server returned status ' + response.status + ': ' + text);
+    }
+    try {
+      return JSON.parse(text);
+    } catch (err) {
+      throw new Error('Invalid JSON response: ' + text);
+    }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -315,8 +334,33 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     if (!ok || !termsOk) { scrollToFirstError(); return; }
 
-    var data = {
-      'Full Name': getVal('firstName')+' '+getVal('lastName'),
+    var uploadZones = [
+      {inputId:'cvFile', zoneId:'cvZone', listId:'cvFileList', hiddenId:'cvDriveUrl'},
+      {inputId:'photoFile', zoneId:'photoZone', listId:'photoFileList', hiddenId:'photoDriveUrl'},
+      {inputId:'samplesFile', zoneId:'samplesZone', listId:'samplesFileList', hiddenId:'workSamplesDriveUrl'}
+    ];
+    var pendingUploads = uploadZones.map(function(zone) {
+      var input = document.getElementById(zone.inputId);
+      if (!input || !input.files || !input.files.length) return Promise.resolve([]);
+      return fileUploadPromises[zone.zoneId] || handleDropFiles(input, zone.zoneId, zone.listId, zone.hiddenId);
+    });
+    Promise.all(pendingUploads).then(function(uploadResults) {
+      console.log('[SWYN] file upload results before submit:', uploadResults);
+      var failedZone = uploadZones.some(function(zone, idx) {
+        var input = document.getElementById(zone.inputId);
+        return input && input.files && input.files.length && (!uploadResults[idx] || !uploadResults[idx].length);
+      });
+      if (failedZone) {
+        var btn = document.getElementById('btnSubmit');
+        btn.textContent = 'Submit Application →';
+        btn.disabled = false;
+        btn.classList.remove('loading');
+        alert('One or more files could not be uploaded. Please try again.');
+        return;
+      }
+
+      var data = {
+        'Full Name': getVal('firstName')+' '+getVal('lastName'),
       'Primary Email Address': getVal('primaryEmail'),
       'Phone Number (including country code)': getVal('phoneNumber'),
       'City': getVal('city')==='Other'?getVal('cityOther'):getVal('city'),
@@ -355,21 +399,19 @@ document.addEventListener('DOMContentLoaded', function() {
       'Consent to list on swyn.in': getVal('websiteListingConsent'),
       'Anything else you would like SWYN to know?': getVal('additionalInfo'),
       'CV / Resume (file name)': (function(){ var i=document.getElementById('cvFile'); return i&&i.files&&i.files.length?Array.from(i.files).map(function(f){return f.name;}).join(', '):''; })(),
+      'CV / Resume (drive URL)': getVal('cvDriveUrl'),
       'Professional Photo (file name)': (function(){ var i=document.getElementById('photoFile'); return i&&i.files&&i.files.length?Array.from(i.files).map(function(f){return f.name;}).join(', '):''; })(),
+      'Professional Photo (drive URL)': getVal('photoDriveUrl'),
       'Work Samples (file names)': (function(){ var i=document.getElementById('samplesFile'); return i&&i.files&&i.files.length?Array.from(i.files).map(function(f){return f.name;}).join(', '):''; })(),
+      'Work Samples (drive URLs)': getVal('workSamplesDriveUrl'),
       'Submitted At': new Date().toLocaleString('en-IN',{timeZone:'Asia/Kolkata'})
     };
 
     var btn = document.getElementById('btnSubmit');
     btn.textContent = '⏳ Submitting…'; btn.disabled = true; btn.classList.add('loading');
 
-    var APPS_SCRIPT_URL ="https://script.google.com/macros/s/AKfycbzfn9hRTQ4reXmaYbxBjDKCJ3nSXhiTE5JnzdH53ja75ueH0rgfWO-EvOuuQLdls3T1fQ/exec";
-
     function handleSubmitResponse(response) {
-      if (!response.ok) {
-        throw new Error('Server returned status ' + response.status);
-      }
-      return response.json();
+      return parseJsonResponse(response);
     }
     function processSubmitResult(result) {
       if (!result || result.success !== true) {
@@ -382,23 +424,30 @@ document.addEventListener('DOMContentLoaded', function() {
       showStep('success');
     }
 
+    console.log('[SWYN] submitting payload to Apps Script:', data);
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      mode: 'no-cors',
       body: JSON.stringify(data)
     })
     .then(handleSubmitResponse)
-    .then(processSubmitResult)
+    .then(function(result) {
+      console.log('[SWYN] Apps Script submission response:', result);
+      processSubmitResult(result);
+    })
     .catch(function(err) {
       console.warn('Submission attempt 1 failed, retrying…', err);
       setTimeout(function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          mode: 'no-cors',
           body: JSON.stringify(data)
         })
         .then(handleSubmitResponse)
-        .then(processSubmitResult)
+        .then(function(result) {
+          console.log('[SWYN] Apps Script submission retry response:', result);
+          processSubmitResult(result);
+        })
         .catch(function(err2) {
           console.error('Submission error after retry:', err2);
           btn.textContent = 'Submit Application →';
@@ -408,6 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
       }, 2000);
     });
+  });
   });
 
 }); // end DOMContentLoaded
@@ -446,6 +496,25 @@ function fmtBytes(b) {
   return (b/1048576).toFixed(1) + ' MB';
 }
 
+function resetDropZone(zoneId, listId, hiddenId) {
+  var zone = document.getElementById(zoneId);
+  var list = document.getElementById(listId);
+  var hidden = document.getElementById(hiddenId);
+  if (!zone) return;
+  var meta = dropZoneMeta[zoneId] || { icon: '📁', title: 'Drag & drop here', sub: 'or <strong>click to browse</strong>' };
+  zone.classList.remove('uploaded');
+  var icon = zone.querySelector('.drop-icon-wrap');
+  var title = zone.querySelector('.drop-zone-title');
+  var sub = zone.querySelector('.drop-zone-sub');
+  if (icon) icon.textContent = meta.icon;
+  if (title) title.textContent = meta.title;
+  if (sub) sub.innerHTML = meta.sub;
+  if (list) list.innerHTML = '';
+  if (hidden) hidden.value = '';
+  var input = zone.querySelector('input[type=file]');
+  if (input) input.value = '';
+}
+
 var dropZoneMeta = {
   cvZone:      { icon:'📄', title:'Drag & drop your CV here',          sub:'or <strong>click to browse</strong> from your device<br/>PDF or Word · Max 10 MB' },
   photoZone:   { icon:'🖼️', title:'Drag & drop your photo here',       sub:'or <strong>click to browse</strong> from your device<br/>JPG or PNG · Max 5 MB' },
@@ -453,117 +522,131 @@ var dropZoneMeta = {
 };
 
 function handleDropFiles(input, zoneId, listId, hiddenId) {
-  if (!input.files || !input.files.length) return;
-  var zone = document.getElementById(zoneId);
-  var list = document.getElementById(listId);
-  var hidden = document.getElementById(hiddenId);
-  var progressBar = zone.querySelector('.drop-progress');
-  var progressFill = zone.querySelector('.drop-progress-fill');
-  var files = Array.from(input.files);
+  return new Promise(function(resolve) {
+    if (!input || !input.files || !input.files.length) return resolve([]);
+    var zone = document.getElementById(zoneId);
+    var list = document.getElementById(listId);
+    var hidden = document.getElementById(hiddenId);
+    if (!zone || !list || !hidden) return resolve([]);
 
-  // Update zone look
-  zone.classList.add('uploaded');
-  zone.style.borderColor = '';
-  zone.style.background = '';
-  var zoneField = zone.closest('.field');
-  if (zoneField) { var zErr = zoneField.querySelector('.err-msg'); if (zErr) zErr.remove(); }
-  zone.querySelector('.drop-zone-title').textContent = files.length === 1 ? '✓ File selected' : '✓ ' + files.length + ' files selected';
-  zone.querySelector('.drop-zone-sub').innerHTML = '<strong>Click or drag</strong> to replace';
-
-  // Progress animation
-  progressBar.style.display = 'block';
-  progressFill.style.width = '0%';
-  setTimeout(function(){ progressFill.style.width = '70%'; }, 40);
-  setTimeout(function(){ progressFill.style.width = '100%'; }, 420);
-  setTimeout(function(){ progressBar.style.display = 'none'; progressFill.style.width = '0%'; }, 900);
-
-  // Render file list
-  list.innerHTML = '';
-  files.forEach(function(f, idx) {
-    var li = document.createElement('li');
-    li.innerHTML = '<span>📎</span>'
-      + '<span class="fname">' + escH(f.name) + '</span>'
-      + '<span class="fsize">' + fmtBytes(f.size) + '</span>'
-      + '<button class="fremove" type="button" title="Remove" onclick="removeDropFile(this,\'' + zoneId + '\',\'' + listId + '\',\'' + hiddenId + '\',' + idx + ')">&#10005;</button>';
-    list.appendChild(li);
-  });
-
-  hidden.value = files.map(function(f){return f.name;}).join(', ');
-
-  // Size limits per zone (bytes)
-  var sizeLimits = { cvZone: 10*1024*1024, photoZone: 5*1024*1024, samplesZone: 20*1024*1024 };
-  var totalSize = files.reduce(function(sum, f){ return sum + f.size; }, 0);
-  var limit = sizeLimits[zoneId] || 20*1024*1024;
-  if (totalSize > limit) {
-    var zField = zone.closest('.field');
-    if (zField && !zField.querySelector('.err-msg')) {
-      var szErr = document.createElement('span');
-      szErr.className = 'err-msg';
-      szErr.textContent = 'File size exceeds the limit (' + fmtBytes(limit) + '). Please choose a smaller file.';
-      zField.appendChild(szErr);
+    var files = Array.from(input.files);
+    var sizeLimits = { cvZone: 10*1024*1024, photoZone: 5*1024*1024, samplesZone: 20*1024*1024 };
+    var totalSize = files.reduce(function(sum, file) { return sum + file.size; }, 0);
+    var maxSize = sizeLimits[zoneId] || 20*1024*1024;
+    if (totalSize > maxSize) {
+      var field = zone.closest('.field');
+      if (field && !field.querySelector('.err-msg')) {
+        var err = document.createElement('span');
+        err.className = 'err-msg';
+        err.textContent = 'Total file size exceeds the limit (' + fmtBytes(maxSize) + '). Please choose smaller files.';
+        field.appendChild(err);
+      }
+      resetDropZone(zoneId, listId, hiddenId);
+      return resolve([]);
     }
-    // Reset zone
-    zone.classList.remove('uploaded');
-    var meta2 = dropZoneMeta[zoneId] || {};
-    zone.querySelector('.drop-icon-wrap').textContent = meta2.icon || '📁';
-    zone.querySelector('.drop-zone-title').textContent = meta2.title || 'Drag & drop here';
-    zone.querySelector('.drop-zone-sub').innerHTML = meta2.sub || 'or <strong>click to browse</strong>';
-    list.innerHTML = ''; hidden.value = '';
-    input.value = '';
-    return;
-  }
 
-  // Upload each file to Google Apps Script as base64 JSON
-  var GAS_URL = "https://script.google.com/macros/s/AKfycbzfn9hRTQ4reXmaYbxBjDKCJ3nSXhiTE5JnzdH53ja75ueH0rgfWO-EvOuuQLdls3T1fQ/exec";
-  var typeMap = { cvZone:'cv', photoZone:'photo', samplesZone:'worksamples' };
-  var uploadType = typeMap[zoneId] || 'cv';
+    zone.classList.add('uploaded');
+    zone.style.borderColor = '';
+    zone.style.background = '';
+    var zoneField = zone.closest('.field');
+    if (zoneField) {
+      var oldErr = zoneField.querySelector('.err-msg');
+      if (oldErr) oldErr.remove();
+    }
 
-  function sendFile(file, attempt) {
-    attempt = attempt || 1;
-    var reader = new FileReader();
-    reader.onload = function(ev) {
-      var base64 = ev.target.result.split(',')[1];
-  fetch(GAS_URL, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      action: 'uploadFile',
-      type: uploadType,
-      fileName: file.name,
-      mimeType: file.type || 'application/octet-stream',
-      data: base64
-    })
-  })
-      .then(function(response) {
-        if (!response.ok) {
-          throw new Error('Upload failed with status ' + response.status);
-        }
-        return response.json();
-      })
-      .then(function(result) {
-        if (!result || result.success !== true) {
-          throw new Error(result && result.error ? result.error : 'Upload failed');
-        }
-        console.log('File upload successful: ' + file.name);
-      })
-      .catch(function(err) {
-        if (attempt < 3) {
-          // Retry up to 2 more times with a small delay
-          console.warn('Upload attempt ' + attempt + ' failed for ' + file.name + ', retrying…', err);
-          setTimeout(function(){ sendFile(file, attempt + 1); }, 1500 * attempt);
-        } else {
-          // Silent failure — form still works, file name is stored in hidden field
-          console.warn('Upload background send failed after 3 attempts for: ' + file.name + '. Will be noted in form submission.', err);
-        }
+    var title = zone.querySelector('.drop-zone-title');
+    var sub = zone.querySelector('.drop-zone-sub');
+    if (title) title.textContent = files.length === 1 ? '✓ File selected' : '✓ ' + files.length + ' files selected';
+    if (sub) sub.innerHTML = '<strong>Click or drag</strong> to replace';
+
+    var progressBar = zone.querySelector('.drop-progress');
+    var progressFill = zone.querySelector('.drop-progress-fill');
+    if (progressBar && progressFill) {
+      progressBar.style.display = 'block';
+      progressFill.style.width = '0%';
+      setTimeout(function() { progressFill.style.width = '70%'; }, 40);
+      setTimeout(function() { progressFill.style.width = '100%'; }, 420);
+      setTimeout(function() { progressBar.style.display = 'none'; progressFill.style.width = '0%'; }, 900);
+    }
+
+    list.innerHTML = '';
+    files.forEach(function(file, idx) {
+      var li = document.createElement('li');
+      li.innerHTML = '<span>📎</span>'
+        + '<span class="fname">' + escH(file.name) + '</span>'
+        + '<span class="fsize">' + fmtBytes(file.size) + '</span>'
+        + '<button class="fremove" type="button" title="Remove" onclick="removeDropFile(this,\'' + zoneId + '\',\'' + listId + '\',\'' + hiddenId + '\',' + idx + ')">&#10005;</button>';
+      list.appendChild(li);
+    });
+
+    hidden.value = '';
+    var typeMap = { cvZone:'cv', photoZone:'photo', samplesZone:'worksamples' };
+    var uploadType = typeMap[zoneId] || 'cv';
+
+    var uploadPromises = files.map(function(file) {
+      return new Promise(function(resolveUpload) {
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var base64 = ev.target.result.split(',')[1];
+          fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify({
+              action: 'uploadFile',
+              type: uploadType,
+              fileName: file.name,
+              mimeType: file.type || 'application/octet-stream',
+              data: base64
+            })
+          })
+          .then(function(response) {
+            if (response.type === 'opaque') {
+              console.warn('[SWYN] no-cors upload response is opaque; assuming upload request was sent');
+              resolveUpload(null);
+              return null;
+            }
+            return response.text().then(function(text) {
+              if (!response.ok) {
+                throw new Error('Upload failed with status ' + response.status + ': ' + text);
+              }
+              try {
+                return JSON.parse(text);
+              } catch (err) {
+                throw new Error('Upload invalid JSON: ' + text);
+              }
+            });
+          })
+          .then(function(result) {
+            if (result === null) {
+              return;
+            }
+            if (!result || result.success !== true || !result.url) {
+              throw new Error(result && result.error ? result.error : 'Upload failed');
+            }
+            console.log('[SWYN] uploaded file:', file.name, 'type:', uploadType, 'url:', result.url);
+            resolveUpload(result.url);
+          })
+          .catch(function(err) {
+            console.warn('Upload failed for ' + file.name + ':', err);
+            resolveUpload(null);
+          });
+        };
+        reader.onerror = function() {
+          console.error('FileReader could not read: ' + file.name);
+          resolveUpload(null);
+        };
+        reader.readAsDataURL(file);
       });
-    };
-    reader.onerror = function() {
-      console.error('FileReader could not read: ' + file.name);
-    };
-    reader.readAsDataURL(file);
-  }
+    });
 
-  files.forEach(function(file) { sendFile(file, 1); });
+    var finishPromise = Promise.all(uploadPromises).then(function(urls) {
+      var validUrls = urls.filter(function(url) { return url; });
+      hidden.value = validUrls.length ? validUrls.join(', ') : '';
+      return validUrls;
+    });
+    fileUploadPromises[zoneId] = finishPromise;
+    finishPromise.then(resolve, function() { resolve([]); });
+  });
 }
 
 function removeDropFile(btn, zoneId, listId, hiddenId, idx) {
