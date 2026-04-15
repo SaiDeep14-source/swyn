@@ -83,6 +83,16 @@ function parseJsonResponse(response) {
   });
 }
 
+function encodeFormBody(obj) {
+  var parts = [];
+  Object.keys(obj).forEach(function(key) {
+    var value = obj[key];
+    if (value === undefined || value === null) return;
+    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+  });
+  return parts.join('&');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // Initialise drag-and-drop on all drop zones
@@ -424,11 +434,14 @@ document.addEventListener('DOMContentLoaded', function() {
       showStep('success');
     }
 
+    var formBody = encodeFormBody(data);
     console.log('[SWYN] submitting payload to Apps Script:', data);
+    console.log('[SWYN] encoded payload:', formBody);
     fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      body: JSON.stringify(data)
+      headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+      body: formBody
     })
     .then(handleSubmitResponse)
     .then(function(result) {
@@ -441,7 +454,8 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(APPS_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
-          body: JSON.stringify(data)
+          headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+          body: formBody
         })
         .then(handleSubmitResponse)
         .then(function(result) {
@@ -588,16 +602,19 @@ function handleDropFiles(input, zoneId, listId, hiddenId) {
         var reader = new FileReader();
         reader.onload = function(ev) {
           var base64 = ev.target.result.split(',')[1];
+          var uploadBody = encodeFormBody({
+            action: 'uploadFile',
+            type: uploadType,
+            fileName: file.name,
+            mimeType: file.type || 'application/octet-stream',
+            data: base64
+          });
+          console.log('[SWYN] upload body for', file.name, uploadBody);
           fetch(APPS_SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
-            body: JSON.stringify({
-              action: 'uploadFile',
-              type: uploadType,
-              fileName: file.name,
-              mimeType: file.type || 'application/octet-stream',
-              data: base64
-            })
+            headers: {'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'},
+            body: uploadBody
           })
           .then(function(response) {
             if (response.type === 'opaque') {

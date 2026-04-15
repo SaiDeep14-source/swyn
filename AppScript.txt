@@ -49,6 +49,7 @@ function doPost(e) {
 
       var file = folder.createFile(blob);
       file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      Logger.log('Created Drive file URL: %s', file.getUrl());
 
       return ContentService
         .createTextOutput(JSON.stringify({
